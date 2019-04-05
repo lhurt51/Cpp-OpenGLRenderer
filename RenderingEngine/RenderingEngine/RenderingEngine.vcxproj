@@ -76,7 +76,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)/../Libraries/SDL2/include;$(SolutionDir)/../Libraries/glew/include;$(SolutionDir)/../Libraries/glfw/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)/../Libraries/SDL2/include;$(SolutionDir)/../Libraries/glew/include;$(SolutionDir)/../Libraries/glfw/include;$(SolutionDir)/../Libraries/glm/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(SolutionDir)/../Libraries/SDL2/lib/x86;$(SolutionDir)/../Libraries/glew/lib/Release/Win32;$(SolutionDir)/../Libraries/glfw/lib-vc2015;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -127,11 +127,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Src\Mesh.cpp" />
     <ClCompile Include="Src\Shader.cpp" />
     <ClCompile Include="Src\Display.cpp" />
     <ClCompile Include="Src\Source.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Src\Mesh.h" />
     <ClInclude Include="Src\Shader.h" />
     <ClInclude Include="Src\Display.h" />
   </ItemGroup>
