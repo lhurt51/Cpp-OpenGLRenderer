@@ -21,10 +21,22 @@
     <ClCompile Include="Src\Display.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Src\Shader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\Display.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Shader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="res\basicShader.vs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\basicShader.fs" />
   </ItemGroup>
 </Project>

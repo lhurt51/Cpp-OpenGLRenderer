@@ -127,11 +127,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Src\Shader.cpp" />
     <ClCompile Include="Src\Display.cpp" />
     <ClCompile Include="Src\Source.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Src\Shader.h" />
     <ClInclude Include="Src\Display.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="res\basicShader.vs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\basicShader.fs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
