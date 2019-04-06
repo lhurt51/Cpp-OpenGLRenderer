@@ -1,6 +1,7 @@
 #include "Shader.h"
 #include <fstream>
 #include <iostream>
+#include "Transform.h"
 
 static void CheckShaderError(GLuint shader, GLuint flag, bool isProgram, const std::string& errorMessage);
 static std::string LoadShader(const std::string& fileName);
@@ -18,12 +19,15 @@ Shader::Shader(const std::string& fileName)
 	}
 
 	glBindAttribLocation(m_program, 0, "position");
+	glBindAttribLocation(m_program, 1, "texCoord");
 
 	glLinkProgram(m_program);
 	CheckShaderError(m_program, GL_LINK_STATUS, true, "Error: Program linking failed: ");
 
 	glValidateProgram(m_program);
 	CheckShaderError(m_program, GL_VALIDATE_STATUS, true, "Error: Program is invalid: ");
+
+	m_uniforms[TRANSFORM_U] = glGetUniformLocation(m_program, "transform");
 }
 
 Shader::~Shader()
@@ -39,6 +43,13 @@ Shader::~Shader()
 void Shader::Bind(void)
 {
 	glUseProgram(m_program);
+}
+
+void Shader::Update(const Transform & transform)
+{
+	glm::mat4 model = transform.GetModel();
+
+	glUniformMatrix4fv(m_uniforms[TRANSFORM_U], 1, GL_FALSE, &model[0][0]);
 }
 
 static GLuint CreateShader(const std::string& text, GLenum shaderType)
@@ -90,10 +101,18 @@ static void CheckShaderError(GLuint shader, GLuint flag, bool isProgram, const s
 	GLchar error[1024] = { 0 };
 
 	if (isProgram)
-		glGetProgramInfoLog(shader, sizeof(error), NULL, error);
+		glGetProgramiv(shader, flag, &success);
 	else
-		glGetShaderInfoLog(shader, sizeof(error), NULL, error);
+		glGetShaderiv(shader, flag, &success);
 
-	std::cerr << errorMessage << ": '" << error << "'" << std::endl;
+	if (success == GL_FALSE)
+	{
+		if (isProgram)
+			glGetProgramInfoLog(shader, sizeof(error), NULL, error);
+		else
+			glGetShaderInfoLog(shader, sizeof(error), NULL, error);
+
+		std::cerr << errorMessage << ": '" << error << "'" << std::endl;
+	}
 }
 

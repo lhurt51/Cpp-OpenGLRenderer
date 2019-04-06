@@ -131,11 +131,16 @@
     <ClCompile Include="Src\Shader.cpp" />
     <ClCompile Include="Src\Display.cpp" />
     <ClCompile Include="Src\Source.cpp" />
+    <ClCompile Include="Src\stb\stb_image.c" />
+    <ClCompile Include="Src\Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\Mesh.h" />
     <ClInclude Include="Src\Shader.h" />
     <ClInclude Include="Src\Display.h" />
+    <ClInclude Include="Src\stb\stb_image.h" />
+    <ClInclude Include="Src\Texture.h" />
+    <ClInclude Include="Src\Transform.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="res\basicShader.vs" />
