@@ -2,6 +2,7 @@
 
 #include <glm/glm.hpp>
 #include <GL/glew.h>
+#include "ObjLoader/obj_loader.h"
 
 class Vertex
 {
@@ -43,10 +44,15 @@ class Mesh
 
 public:
 
-	Mesh(Vertex* vertices, unsigned int numVertices);
+	Mesh(const std::string& fileName);
+	Mesh(Vertex* vertices, unsigned int numVertices, unsigned int* indices, unsigned int numIndices);
 	virtual ~Mesh();
 
 	void Draw();
+
+private:
+
+	void InitMesh(const IndexedModel& model);
 
 };
 

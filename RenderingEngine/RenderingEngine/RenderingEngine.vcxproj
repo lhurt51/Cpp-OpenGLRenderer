@@ -128,6 +128,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Src\Mesh.cpp" />
+    <ClCompile Include="Src\ObjLoader\obj_loader.cpp" />
     <ClCompile Include="Src\Shader.cpp" />
     <ClCompile Include="Src\Display.cpp" />
     <ClCompile Include="Src\Source.cpp" />
@@ -137,6 +138,7 @@
   <ItemGroup>
     <ClInclude Include="Src\Camera.h" />
     <ClInclude Include="Src\Mesh.h" />
+    <ClInclude Include="Src\ObjLoader\obj_loader.h" />
     <ClInclude Include="Src\Shader.h" />
     <ClInclude Include="Src\Display.h" />
     <ClInclude Include="Src\stb\stb_image.h" />
