@@ -4,6 +4,7 @@
 #include <GL/glew.h>
 
 class Transform;
+class Camera;
 
 class Shader
 {
@@ -26,7 +27,7 @@ public:
 
 	// Bind the vertex and fragment shaders
 	void Bind(void);
-	void Update(const Transform& transform);
+	void Update(const Transform& transform, const Camera& camera);
 
 };
 

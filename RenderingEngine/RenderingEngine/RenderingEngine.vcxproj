@@ -135,6 +135,7 @@
     <ClCompile Include="Src\Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Src\Camera.h" />
     <ClInclude Include="Src\Mesh.h" />
     <ClInclude Include="Src\Shader.h" />
     <ClInclude Include="Src\Display.h" />

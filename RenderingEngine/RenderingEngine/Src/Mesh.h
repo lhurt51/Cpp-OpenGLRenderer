@@ -32,6 +32,8 @@ class Mesh
 		POSITION_VB,
 		TEXTCOORD_VB,
 
+		INDEX_VB,
+
 		NUM_BUFFERS
 	};
 
