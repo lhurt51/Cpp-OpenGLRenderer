@@ -2,6 +2,7 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
+#include "Camera.h"
 
 class Transform
 {
@@ -23,14 +24,22 @@ public:
 	inline glm::mat4 GetModel() const
 	{
 		glm::mat4 posMatrix = glm::translate(m_pos);
+		glm::mat4 scaleMatrix = glm::scale(m_scale);
 		glm::mat4 rotationXMatrix = glm::rotate(m_rot.x, glm::vec3(1, 0, 0));
 		glm::mat4 rotationYMatrix = glm::rotate(m_rot.y, glm::vec3(0, 1, 0));
 		glm::mat4 rotationZMatrix = glm::rotate(m_rot.z, glm::vec3(0, 0, 1));
-		glm::mat4 scaleMatrix = glm::scale(m_scale);
 
 		glm::mat4 rotMatrix = rotationZMatrix * rotationYMatrix * rotationXMatrix;
 
 		return posMatrix * rotMatrix * scaleMatrix;
+	}
+
+	inline glm::mat4 GetMVP(const Camera& camera) const
+	{
+		glm::mat4 VP = camera.GetViewProjection();
+		glm::mat4 M = GetModel();
+
+		return VP * M;
 	}
 
 	inline glm::vec3& GetPos() { return m_pos; }

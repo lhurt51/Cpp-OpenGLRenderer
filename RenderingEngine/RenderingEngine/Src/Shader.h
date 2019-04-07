@@ -10,8 +10,9 @@ class Shader
 {
 	enum
 	{
-		TRANSFORM_U,
-
+		MVP_U,
+		NORMAL_U,
+		LIGHTDIRECTION_U,
 		NUM_UNIFORMS
 	};
 

@@ -21,6 +21,7 @@ Shader::Shader(const std::string& fileName)
 
 	glBindAttribLocation(m_program, 0, "position");
 	glBindAttribLocation(m_program, 1, "texCoord");
+	glBindAttribLocation(m_program, 2, "normal");
 
 	glLinkProgram(m_program);
 	CheckShaderError(m_program, GL_LINK_STATUS, true, "Error: Program linking failed: ");
@@ -28,7 +29,9 @@ Shader::Shader(const std::string& fileName)
 	glValidateProgram(m_program);
 	CheckShaderError(m_program, GL_VALIDATE_STATUS, true, "Error: Program is invalid: ");
 
-	m_uniforms[TRANSFORM_U] = glGetUniformLocation(m_program, "transform");
+	m_uniforms[MVP_U] = glGetUniformLocation(m_program, "MVP");
+	m_uniforms[NORMAL_U] = glGetUniformLocation(m_program, "Normal");
+	m_uniforms[LIGHTDIRECTION_U] = glGetUniformLocation(m_program, "lightDirection");
 }
 
 Shader::~Shader()
@@ -48,9 +51,12 @@ void Shader::Bind(void)
 
 void Shader::Update(const Transform & transform, const Camera& camera)
 {
-	glm::mat4 model = camera.GetViewProjection() * transform.GetModel();
+	glm::mat4 MVP = transform.GetMVP(camera);
+	glm::mat4 Normal = transform.GetModel();
 
-	glUniformMatrix4fv(m_uniforms[TRANSFORM_U], 1, GL_FALSE, &model[0][0]);
+	glUniformMatrix4fv(m_uniforms[MVP_U], 1, GL_FALSE, &MVP[0][0]);
+	glUniformMatrix4fv(m_uniforms[NORMAL_U], 1, GL_FALSE, &Normal[0][0]);
+	glUniform3f(m_uniforms[LIGHTDIRECTION_U], 0.0f, 1.0f, 0.0f);
 }
 
 static GLuint CreateShader(const std::string& text, GLenum shaderType)
