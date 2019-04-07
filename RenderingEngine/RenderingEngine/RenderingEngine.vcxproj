@@ -134,6 +134,9 @@
     <ClCompile Include="Src\Source.cpp" />
     <ClCompile Include="Src\stb\stb_image.c" />
     <ClCompile Include="Src\Texture.cpp" />
+    <ClCompile Include="Src\Utils\Math\MathUtils.cpp" />
+    <ClCompile Include="Src\Utils\Time\Time.cpp" />
+    <ClCompile Include="Src\Utils\Util.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\Camera.h" />
@@ -144,6 +147,9 @@
     <ClInclude Include="Src\stb\stb_image.h" />
     <ClInclude Include="Src\Texture.h" />
     <ClInclude Include="Src\Transform.h" />
+    <ClInclude Include="Src\Utils\Math\MathUtils.h" />
+    <ClInclude Include="Src\Utils\Time\Time.h" />
+    <ClInclude Include="Src\Utils\Util.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="res\basicShader.vs" />

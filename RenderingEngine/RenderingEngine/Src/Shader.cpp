@@ -56,7 +56,7 @@ void Shader::Update(const Transform & transform, const Camera& camera)
 
 	glUniformMatrix4fv(m_uniforms[MVP_U], 1, GL_FALSE, &MVP[0][0]);
 	glUniformMatrix4fv(m_uniforms[NORMAL_U], 1, GL_FALSE, &Normal[0][0]);
-	glUniform3f(m_uniforms[LIGHTDIRECTION_U], 0.0f, 1.0f, 0.0f);
+	glUniform3f(m_uniforms[LIGHTDIRECTION_U], 0.0f, -1.0f, 0.0f);
 }
 
 static GLuint CreateShader(const std::string& text, GLenum shaderType)
