@@ -76,11 +76,11 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)/../Libraries/SDL2/include;$(SolutionDir)/../Libraries/glew/include;$(SolutionDir)/../Libraries/glfw/include;$(SolutionDir)/../Libraries/glm/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)/../Libraries/assimp/include;$(SolutionDir)/../Libraries/SDL2/include;$(SolutionDir)/../Libraries/glew/include;$(SolutionDir)/../Libraries/glfw/include;$(SolutionDir)/../Libraries/glm/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(SolutionDir)/../Libraries/SDL2/lib/x86;$(SolutionDir)/../Libraries/glew/lib/Release/Win32;$(SolutionDir)/../Libraries/glfw/lib-vc2015;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;opengl32.lib;glew32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)/../Libraries/assimp/lib;$(SolutionDir)/../Libraries/SDL2/lib/x86;$(SolutionDir)/../Libraries/glew/lib/Release/Win32;$(SolutionDir)/../Libraries/glfw/lib-vc2015;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>assimp-vc140-mt.lib;SDL2.lib;SDL2main.lib;opengl32.lib;glew32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
     </Link>
   </ItemDefinitionGroup>
@@ -127,6 +127,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Src\RenderingEngine.cpp" />
+    <ClCompile Include="Src\CoreEngine.cpp" />
     <ClCompile Include="Src\Mesh.cpp" />
     <ClCompile Include="Src\ObjLoader\obj_loader.cpp" />
     <ClCompile Include="Src\Shader.cpp" />
@@ -139,6 +141,11 @@
     <ClCompile Include="Src\Utils\Util.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Src\MappedValues.h" />
+    <ClInclude Include="Src\Material.h" />
+    <ClInclude Include="Src\RenderingEngine.h" />
+    <ClInclude Include="Src\CoreEngine.h" />
+    <ClInclude Include="Src\3DEngine.h" />
     <ClInclude Include="Src\Camera.h" />
     <ClInclude Include="Src\Mesh.h" />
     <ClInclude Include="Src\ObjLoader\obj_loader.h" />
