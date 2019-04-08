@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-//#include "RenderingEngine.h"
+#include "RenderingEngine.h"
 
 //class Game;
 
@@ -13,7 +13,7 @@ class CoreEngine
 	int m_height;
 	double m_frameTime;
 	// Game* m_game;
-	// RenderingEngine* m_renderingEngine;
+	RenderingEngine* m_renderingEngine;
 
 public:
 
@@ -26,7 +26,7 @@ public:
 	void Start();
 	void Stop();
 
-	// inline RenderingEngine* GetRenderingEngine() { return m_renderingEngine; }
+	inline RenderingEngine* GetRenderingEngine() { return m_renderingEngine; }
 
 private:
 

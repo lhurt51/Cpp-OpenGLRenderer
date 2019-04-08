@@ -1,9 +1,9 @@
 #include "CoreEngine.h"
 #include "Utils\Util.h"
 #include "Utils\Time\Time.h"
-// #include "Utils\RenderUtil.h"
-// #include "Window.h"
-// #include "Input.h"
+#include "Utils\Rendering\RenderUtil.h"
+#include "Window.h"
+#include "Input\Input.h"
 // #include "Game.h"
 
 
@@ -20,15 +20,15 @@ CoreEngine::CoreEngine(int width, int height, double frameRate) :
 
 CoreEngine::~CoreEngine()
 {
-	// Window::Dispose();
-	// if (m_renderingEngine) delete m_renderingEngine;
+	Window::Dispose();
+	if (m_renderingEngine) delete m_renderingEngine;
 }
 
 void CoreEngine::CreateWindow(const std::string & title)
 {
-	// Window::Create(m_width, m_height, title);
-	// RenderUtil::InitGraphics();
-	// m_renderingEngine = new RenderingEngine();
+	Window::Create(m_width, m_height, title);
+	RenderUtil::InitGraphics();
+	m_renderingEngine = new RenderingEngine();
 }
 
 void CoreEngine::Start()
@@ -80,10 +80,10 @@ void CoreEngine::Run()
 		{
 			render = true;
 
-			//if (Window::IsCloseRequested())
-				//Stop();
+			if (Window::IsCloseRequested())
+				Stop();
 
-			//Input::Update();
+			Input::Update();
 
 			// m_game->Input((float)m_frameTime);
 			// m_game->Update((float)m_frameTime);
@@ -94,7 +94,7 @@ void CoreEngine::Run()
 		if (render)
 		{
 			//m_game->Render(m_renderingEngine);
-			//Window::Render();
+			Window::Render();
 			frames++;
 		}
 		else
