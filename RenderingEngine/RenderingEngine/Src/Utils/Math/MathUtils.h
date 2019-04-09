@@ -316,6 +316,7 @@ public:
 				}
 			}
 		}
+		return *this;
 	}
 
 	inline Matrix<T, D> InitScale(const Vector<T, D - 1>& r)

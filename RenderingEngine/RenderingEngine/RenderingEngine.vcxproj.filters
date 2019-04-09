@@ -176,11 +176,5 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="res\basicShader.fs" />
-    <None Include="Res\shaders\lighting.glh" />
-    <None Include="Res\shaders\lightingMain.fsh" />
-    <None Include="Res\shaders\lighting.fsh" />
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="Res\shaders\lighting.vsh" />
   </ItemGroup>
 </Project>
