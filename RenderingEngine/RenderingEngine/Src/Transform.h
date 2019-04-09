@@ -1,54 +1,63 @@
 #pragma once
 
-#include <glm/glm.hpp>
-#include <glm/gtx/transform.hpp>
-#include "Camera.h"
+#include "Utils\Math\MathUtils.h"
 
 class Transform
 {
 
-	glm::vec3 m_pos;
+	Vector3f m_pos;
 	// Look up Quaternions
-	glm::vec3 m_rot;
-	glm::vec3 m_scale;
+	Quaternion m_rot;
+	float m_scale;
+
+	Transform* m_parent;
+	mutable Matrix4f m_parentMatrix;
+
+	mutable Vector3f m_oldPos;
+	mutable Quaternion m_oldRot;
+	mutable float m_oldScale;
+	mutable bool m_initializedoldStuff;
 
 public:
 
-	Transform(const glm::vec3& pos = glm::vec3(), const glm::vec3& rot = glm::vec3(), const glm::vec3& scale = glm::vec3(1.0f, 1.0f, 1.0f)) :
-		m_pos(pos), m_rot(rot), m_scale(scale)
-	{}
+	Transform(const Vector3f& pos = Vector3f(), const Quaternion& rot = Quaternion(), float scale = 1.0f);
 
-	virtual ~Transform()
-	{}
+	inline Vector3f& GetPos() { return m_pos; }
+	inline const Vector3f& GetPos() const { return m_pos; }
+	inline Quaternion& GetRot() { return m_rot; }
+	inline const Quaternion& GetRot() const { return m_rot; }
+	inline float GetScale() const { return m_scale; }
 
-	inline glm::mat4 GetModel() const
+	inline void SetPos(const Vector3f& pos) { m_pos = pos; }
+	inline void SetRot(const Quaternion& rot) { m_rot = rot; }
+	inline void SetScale(float scale) { m_scale = scale; }
+	inline void SetParent(Transform* parent) { m_parent = parent; }
+
+	Matrix4f GetTransformation() const;
+	bool HasChanged();
+	void Update();
+	void Rotate(const Vector3f& axis, float angle);
+	void Rotate(const Quaternion& rotation);
+	void LookAt(const Vector3f& point, const Vector3f& up);
+
+	Quaternion GetLookAtRotation(const Vector3f& point, const Vector3f& up)
 	{
-		glm::mat4 posMatrix = glm::translate(m_pos);
-		glm::mat4 scaleMatrix = glm::scale(m_scale);
-		glm::mat4 rotationXMatrix = glm::rotate(m_rot.x, glm::vec3(1, 0, 0));
-		glm::mat4 rotationYMatrix = glm::rotate(m_rot.y, glm::vec3(0, 1, 0));
-		glm::mat4 rotationZMatrix = glm::rotate(m_rot.z, glm::vec3(0, 0, 1));
-
-		glm::mat4 rotMatrix = rotationZMatrix * rotationYMatrix * rotationXMatrix;
-
-		return posMatrix * rotMatrix * scaleMatrix;
+		return Quaternion(Matrix4f().InitRotationFromDirection((point - m_pos).Normalized(), up));
 	}
 
-	inline glm::mat4 GetMVP(const Camera& camera) const
+	inline Vector3f GetTransformedPos() const { return Vector3f(GetParentMatrix().Transform(m_pos)); }
+	inline Quaternion GetTransformedRot() const
 	{
-		glm::mat4 VP = camera.GetViewProjection();
-		glm::mat4 M = GetModel();
+		Quaternion parentRot = Quaternion(0, 0, 0, 1);
 
-		return VP * M;
+		if (m_parent)
+			parentRot = m_parent->GetTransformedRot();
+		return parentRot * m_rot;
 	}
 
-	inline glm::vec3& GetPos() { return m_pos; }
-	inline glm::vec3& GetRot() { return m_rot; }
-	inline glm::vec3& GetScale() { return m_scale; }
+private:
 
-	inline void SetPos(const glm::vec3& pos) { m_pos = pos; }
-	inline void SetRot(const glm::vec3& rot) { m_rot = rot; }
-	inline void SetScale(const glm::vec3& scale) { m_scale = scale; }
+	Matrix4f GetParentMatrix() const;
 
 };
 

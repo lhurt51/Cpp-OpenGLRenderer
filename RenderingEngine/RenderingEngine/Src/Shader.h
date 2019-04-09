@@ -3,6 +3,8 @@
 #include <string>
 #include <GL/glew.h>
 
+#include "Material.h"
+
 class Transform;
 class Camera;
 

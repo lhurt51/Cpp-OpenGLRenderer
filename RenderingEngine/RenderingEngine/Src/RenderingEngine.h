@@ -2,6 +2,7 @@
 
 #include "Camera.h"
 #include "Lighting/Lighting.h"
+#include "MappedValues.h"
 #include "Material.h"
 
 #include <vector>
@@ -11,7 +12,7 @@ class Transform;
 class Shader;
 class GameObject;
 
-class RenderingEngine
+class RenderingEngine : public MappedValues
 {
 
 	Camera* m_mainCamera;

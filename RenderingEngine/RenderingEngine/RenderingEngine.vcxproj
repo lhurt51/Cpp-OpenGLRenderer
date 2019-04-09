@@ -127,6 +127,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Src\Camera.cpp" />
+    <ClCompile Include="Src\FreeLook.cpp" />
+    <ClCompile Include="Src\FreeMove.cpp" />
+    <ClCompile Include="Src\Game.cpp" />
     <ClCompile Include="Src\GameObject.cpp" />
     <ClCompile Include="Src\Input\Input.cpp" />
     <ClCompile Include="Src\Lighting\Lighting.cpp" />
@@ -140,6 +144,7 @@
     <ClCompile Include="Src\Source.cpp" />
     <ClCompile Include="Src\stb\stb_image.c" />
     <ClCompile Include="Src\Texture.cpp" />
+    <ClCompile Include="Src\Transform.cpp" />
     <ClCompile Include="Src\Utils\Math\MathUtils.cpp" />
     <ClCompile Include="Src\Utils\Rendering\RenderUtil.cpp" />
     <ClCompile Include="Src\Utils\Time\Time.cpp" />
@@ -147,6 +152,9 @@
     <ClCompile Include="Src\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Src\FreeLook.h" />
+    <ClInclude Include="Src\FreeMove.h" />
+    <ClInclude Include="Src\Game.h" />
     <ClInclude Include="Src\GameObject.h" />
     <ClInclude Include="Src\GameComponent.h" />
     <ClInclude Include="Src\Input\Input.h" />
@@ -178,6 +186,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="res\basicShader.fs" />
+    <None Include="Res\shaders\lighting.fsh" />
+    <None Include="Res\shaders\lighting.glh" />
+    <None Include="Res\shaders\lightingMain.fsh" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Res\shaders\lighting.vsh" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

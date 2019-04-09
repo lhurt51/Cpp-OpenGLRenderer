@@ -14,7 +14,7 @@ GameObject::~GameObject()
 GameObject * GameObject::AddChild(GameObject * child)
 {
 	m_children.push_back(child);
-	// child->GetTransform().SetParent(&m_transform);
+	child->GetTransform().SetParent(&m_transform);
 	child->SetEngine(m_coreEngine);
 	return this;
 }
@@ -79,7 +79,7 @@ void GameObject::SetEngine(CoreEngine * engine)
 
 void GameObject::Input(float delta)
 {
-	// m_transform.Update();
+	m_transform.Update();
 
 	for (unsigned int i = 0; i < m_components.size(); i++)
 		m_components[i]->Input(delta);
