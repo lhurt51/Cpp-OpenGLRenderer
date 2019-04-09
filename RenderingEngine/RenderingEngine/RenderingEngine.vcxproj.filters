@@ -176,5 +176,13 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="res\basicShader.fs" />
+    <None Include="Res\shaders\forward-ambient.vs" />
+    <None Include="Res\shaders\forward-ambient.fs" />
+    <None Include="Res\shaders\forward-directional.fs" />
+    <None Include="Res\shaders\forward-directional.vs" />
+    <None Include="Res\shaders\forward-point.fs" />
+    <None Include="Res\shaders\forward-point.vs" />
+    <None Include="Res\shaders\forward-spot.fs" />
+    <None Include="Res\shaders\forward-spot.vs" />
   </ItemGroup>
 </Project>
