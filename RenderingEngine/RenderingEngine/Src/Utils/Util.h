@@ -1,6 +1,6 @@
 #pragma once
 
-#ifndef _WIN32 || WIN32 || __WIN32__ || _WIN64 || WIN64
+#ifndef _WIN32
 	#include <unistd>
 #endif
 

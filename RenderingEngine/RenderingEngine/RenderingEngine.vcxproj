@@ -127,7 +127,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Src\GameObject.cpp" />
     <ClCompile Include="Src\Input\Input.cpp" />
+    <ClCompile Include="Src\Lighting\Lighting.cpp" />
     <ClCompile Include="Src\RenderingEngine.cpp" />
     <ClCompile Include="Src\CoreEngine.cpp" />
     <ClCompile Include="Src\Mesh.cpp" />
@@ -145,7 +147,10 @@
     <ClCompile Include="Src\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Src\GameObject.h" />
+    <ClInclude Include="Src\GameComponent.h" />
     <ClInclude Include="Src\Input\Input.h" />
+    <ClInclude Include="Src\Lighting\Lighting.h" />
     <ClInclude Include="Src\MappedValues.h" />
     <ClInclude Include="Src\Material.h" />
     <ClInclude Include="Src\Mesh\MeshRenderer.h" />

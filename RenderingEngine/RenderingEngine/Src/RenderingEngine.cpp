@@ -1,7 +1,7 @@
 #include "RenderingEngine.h"
 
 // #include "Window.h"
-// #include "GameObject.h"
+#include "GameObject.h"
 #include "Shader.h"
 #include <GL/glew.h>
 
@@ -27,7 +27,6 @@ RenderingEngine::~RenderingEngine()
 	if (m_defaultShader) delete m_defaultShader;
 }
 
-/*
 void	RenderingEngine::Render(GameObject* object)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -48,4 +47,3 @@ void	RenderingEngine::Render(GameObject* object)
 	glDepthFunc(GL_LESS);
 	glDisable(GL_BLEND);
 }
-*/

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Camera.h"
-// #include "Lighting.h"
+#include "Lighting/Lighting.h"
 #include "Material.h"
 
 #include <vector>
@@ -9,15 +9,15 @@
 
 class Transform;
 class Shader;
-// class GameObject;
+class GameObject;
 
 class RenderingEngine
 {
 
 	Camera* m_mainCamera;
-	// BaseLight* m_activeLight;
+	BaseLight* m_activeLight;
 	Shader* m_defaultShader;
-	// std::vector<BaseLight*> m_lights;
+	std::vector<BaseLight*> m_lights;
 	std::map<std::string, unsigned int> m_samplerMap;
 
 public:
@@ -25,12 +25,12 @@ public:
 	RenderingEngine();
 	virtual ~RenderingEngine();
 
-	// void Render(GameObject* object);
+	void Render(GameObject* object);
 
 	inline Camera& GetMainCamera() { return *m_mainCamera; }
-	// inline BaseLight* GetActiveLight() { return m_activeLight; }
+	inline BaseLight* GetActiveLight() { return m_activeLight; }
 
-	// inline void AddLight(BaseLight* light) { m_lights.push_back(light); }
+	inline void AddLight(BaseLight* light) { m_lights.push_back(light); }
 	inline void AddCamera(Camera* camera) { m_mainCamera = camera; }
 
 	inline unsigned int GetSamplerSlot(const std::string& samplerName) { return m_samplerMap[samplerName]; }
