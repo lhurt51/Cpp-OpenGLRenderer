@@ -1,108 +1,354 @@
 #include "Shader.h"
+
+#include <cassert>
 #include <fstream>
 #include <iostream>
-#include "Transform.h"
-#include "Camera.h"
+#include <GL/glew.h>
+#include <cstdlib>
 
-static void CheckShaderError(GLuint shader, GLuint flag, bool isProgram, const std::string& errorMessage);
+#include "Utils\Util.h"
+
+std::map<std::string, ShaderData*> Shader::s_resourceMap;
+
+static void CheckShaderError(int shader, int flag, bool isProgram, const std::string& errorMessage);
+static std::vector<UniformStruct> FindUniformStructs(const std::string& shaderText);
+static std::string FindUniformStructName(const std::string& structStartToOpeningBrace);
+static std::vector<TypedData> FindUniformStructComponents(const std::string& openingBraceToClosingBrace);
 static std::string LoadShader(const std::string& fileName);
-static GLuint CreateShader(const std::string& text, GLenum shaderType);
 
-Shader::Shader(const std::string& fileName)
+ShaderData::ShaderData(const std::string & fileName)
 {
 	m_program = glCreateProgram();
-	m_shaders[0] = CreateShader(LoadShader(fileName + ".vs"), GL_VERTEX_SHADER);
-	m_shaders[1] = CreateShader(LoadShader(fileName + ".fs"), GL_FRAGMENT_SHADER);
 
-	for (unsigned int i = 0; i < NUM_SHADERS; i++)
+	if (m_program == 0)
 	{
-		glAttachShader(m_program, m_shaders[i]);
+		fprintf(stderr, "Error creating shader program\n");
+		exit(1);
 	}
 
-	glBindAttribLocation(m_program, 0, "position");
-	glBindAttribLocation(m_program, 1, "texCoord");
-	glBindAttribLocation(m_program, 2, "normal");
+	std::string vertexShaderText = LoadShader(fileName + ".vs");
+	std::string fragmentShaderText = LoadShader(fileName + ".fs");
 
-	glLinkProgram(m_program);
-	CheckShaderError(m_program, GL_LINK_STATUS, true, "Error: Program linking failed: ");
+	AddVertexShader(vertexShaderText);
+	AddFragmentShader(fragmentShaderText);
 
-	glValidateProgram(m_program);
-	CheckShaderError(m_program, GL_VALIDATE_STATUS, true, "Error: Program is invalid: ");
+	AddAllAttributes(vertexShaderText);
 
-	m_uniforms[MVP_U] = glGetUniformLocation(m_program, "MVP");
-	m_uniforms[NORMAL_U] = glGetUniformLocation(m_program, "Normal");
-	m_uniforms[LIGHTDIRECTION_U] = glGetUniformLocation(m_program, "lightDirection");
+	CompileShader();
+
+	AddShaderUniforms(vertexShaderText);
+	AddShaderUniforms(fragmentShaderText);
 }
 
-Shader::~Shader()
+ShaderData::~ShaderData()
 {
-	for (unsigned int i = 0; i < NUM_SHADERS; i++)
+	for (std::vector<int>::iterator it = m_shaders.begin(); it != m_shaders.end(); ++it)
 	{
-		glDetachShader(m_program, m_shaders[i]);
-		glDeleteShader(m_shaders[i]);
+		glDetachShader(m_program, *it);
+		glDeleteShader(*it);
 	}
 	glDeleteProgram(m_program);
 }
 
-void Shader::Bind(void)
+void ShaderData::AddVertexShader(const std::string & text)
 {
-	glUseProgram(m_program);
+	AddProgram(text, GL_VERTEX_SHADER);
 }
 
-void Shader::Update(const Transform & transform, const Camera& camera)
+void ShaderData::AddGeometryShader(const std::string & text)
 {
-	glm::mat4 MVP = transform.GetMVP(camera);
-	glm::mat4 Normal = transform.GetModel();
-
-	glUniformMatrix4fv(m_uniforms[MVP_U], 1, GL_FALSE, &MVP[0][0]);
-	glUniformMatrix4fv(m_uniforms[NORMAL_U], 1, GL_FALSE, &Normal[0][0]);
-	glUniform3f(m_uniforms[LIGHTDIRECTION_U], 0.0f, -1.0f, 0.0f);
+	AddProgram(text, GL_GEOMETRY_SHADER);
 }
 
-static GLuint CreateShader(const std::string& text, GLenum shaderType)
+void ShaderData::AddFragmentShader(const std::string & text)
 {
-	GLuint shader = glCreateShader(shaderType);
+	AddProgram(text, GL_FRAGMENT_SHADER);
+}
+
+void ShaderData::AddProgram(const std::string & text, int type)
+{
+	int shader = glCreateShader(type);
 
 	if (shader == 0)
-		std::cerr << "Error: Shader creation failed!" << std::endl;
-	const GLchar* shaderSrcStr[1];
-	GLint shaderSrcStrLen[1];
+	{
+		fprintf(stderr, "Error creating shader type %d\n", type);
+		exit(1);
+	}
 
-	shaderSrcStr[0] = text.c_str();
-	shaderSrcStrLen[0] = text.length();
+	const GLchar* p[1];
+	p[0] = text.c_str();
+	GLint lengths[1];
+	lengths[0] = text.length();
 
-	glShaderSource(shader, 1, shaderSrcStr, shaderSrcStrLen);
+	glShaderSource(shader, 1, p, lengths);
 	glCompileShader(shader);
 
-	CheckShaderError(shader, GL_COMPILE_STATUS, false, "Error: Shader compilation failed: ");
+	GLint success;
+	glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+	if (!success)
+	{
+		GLchar InfoLog[1024];
 
-	return shader;
+		glGetShaderInfoLog(shader, 1024, NULL, InfoLog);
+		fprintf(stderr, "Error compiling shader type %d: '%s'\n", shader, InfoLog);
+
+		exit(1);
+	}
+	glAttachShader(m_program, shader);
+	m_shaders.push_back(shader);
 }
 
-static std::string LoadShader(const std::string& fileName)
+void ShaderData::AddAllAttributes(const std::string & vertexShaderText)
 {
-	std::ifstream file;
-	file.open((fileName).c_str());
+	static const std::string ATTRIBUTE_KEY = "attribute";
 
-	std::string output;
-	std::string line;
+	int currentAttribLocation = 0;
+	size_t attributeLocation = vertexShaderText.find(ATTRIBUTE_KEY);
 
-	if (file.is_open())
+	while (attributeLocation != std::string::npos)
 	{
-		while (file.good())
+		bool isCommented = false;
+		size_t lastLineEnd = vertexShaderText.rfind(";", attributeLocation);
+
+		if (lastLineEnd != std::string::npos)
 		{
-			getline(file, line);
-			output.append(line + "\n");
+			std::string potentialCommentSection = vertexShaderText.substr(lastLineEnd, attributeLocation - lastLineEnd);
+			isCommented = potentialCommentSection.find("//") != std::string::npos;
 		}
+
+		if (!isCommented)
+		{
+			size_t begin = attributeLocation + ATTRIBUTE_KEY.length();
+			size_t end = vertexShaderText.find(";", begin);
+
+			std::string attributeLine = vertexShaderText.substr(begin + 1, end - begin - 1);
+
+			begin = attributeLine.find(" ");
+			std::string attributeName = attributeLine.substr(begin + 1);
+
+			glBindAttribLocation(m_program, currentAttribLocation, attributeName.c_str());
+			currentAttribLocation++;
+		}
+		attributeLocation = vertexShaderText.find(ATTRIBUTE_KEY, attributeLocation + ATTRIBUTE_KEY.length());
+	}
+}
+
+void ShaderData::AddShaderUniforms(const std::string & shaderText)
+{
+	static const std::string UNIFORM_KEY = "uniform";
+
+	std::vector<UniformStruct> structs = FindUniformStructs(shaderText);
+
+	size_t uniformLocation = shaderText.find(UNIFORM_KEY);
+	while (uniformLocation != std::string::npos)
+	{
+		bool isCommented = false;
+		size_t lastLineEnd = shaderText.rfind(";", uniformLocation);
+
+		if (lastLineEnd != std::string::npos)
+		{
+			std::string potentialCommentSection = shaderText.substr(lastLineEnd, uniformLocation - lastLineEnd);
+			isCommented = potentialCommentSection.find("//") != std::string::npos;
+		}
+
+		if (!isCommented)
+		{
+			size_t begin = uniformLocation + UNIFORM_KEY.length();
+			size_t end = shaderText.find(";", begin);
+
+			std::string uniformLine = shaderText.substr(begin + 1, end - begin - 1);
+
+			begin = uniformLine.find(" ");
+			std::string uniformName = uniformLine.substr(begin + 1);
+			std::string uniformType = uniformLine.substr(0, begin);
+
+			m_uniformNames.push_back(uniformName);
+			m_uniformTypes.push_back(uniformType);
+			AddUniform(uniformName, uniformType, structs);
+		}
+		uniformLocation = shaderText.find(UNIFORM_KEY, uniformLocation + UNIFORM_KEY.length());
+	}
+}
+
+void ShaderData::AddUniform(const std::string & uniformName, const std::string & uniformType, const std::vector<UniformStruct>& structs)
+{
+	bool addThis = true;
+
+	for (unsigned int i = 0; i < structs.size(); i++)
+	{
+		if (structs[i].name.compare(uniformType) == 0)
+		{
+			addThis = false;
+			for (unsigned int j = 0; j < structs[i].memberNames.size(); j++)
+			{
+				AddUniform(uniformName + "." + structs[i].memberNames[j].name, structs[i].memberNames[j].type, structs);
+			}
+		}
+	}
+
+	if (!addThis) return;
+
+	unsigned int location = glGetUniformLocation(m_program, uniformName.c_str());
+
+	assert(location != INVALID_VALUE);
+
+	m_uniformMap.insert(std::pair<std::string, unsigned int>(uniformName, location));
+}
+
+void ShaderData::CompileShader()
+{
+	glLinkProgram(m_program);
+	CheckShaderError(m_program, GL_LINK_STATUS, true, "Error linking shader program");
+
+	glValidateProgram(m_program);
+	CheckShaderError(m_program, GL_VALIDATE_STATUS, true, "Invalid shader program");
+}
+
+Shader::Shader(const std::string & fileName)
+{
+	m_fileName = fileName;
+
+	std::map<std::string, ShaderData*>::const_iterator it = s_resourceMap.find(fileName);
+	if (it != s_resourceMap.end())
+	{
+		m_shaderData = it->second;
+		m_shaderData->AddReference();
 	}
 	else
 	{
-		std::cerr << "Unable to load shader: " << fileName << std::endl;
+		m_shaderData = new ShaderData(fileName);
+		s_resourceMap.insert(std::pair<std::string, ShaderData*>(fileName, m_shaderData));
 	}
-	return output;
 }
 
-static void CheckShaderError(GLuint shader, GLuint flag, bool isProgram, const std::string& errorMessage)
+Shader::~Shader()
+{
+	if (m_shaderData && m_shaderData->RemoveReference())
+	{
+		if (m_fileName.length() > 0)
+			s_resourceMap.erase(m_fileName);
+		delete m_shaderData;
+	}
+}
+
+void Shader::Bind()
+{
+	glUseProgram(m_shaderData->GetProgram());
+}
+
+void Shader::UpdateUniforms(const Transform & transform, const Material & material, RenderingEngine * renderingEngine)
+{
+	Matrix4f worldMatrix = transform.GetTransformation();
+	Matrix4f projectedMatrix = renderingEngine->GetMainCamera().GetViewProjection() * worldMatrix;
+
+	for (unsigned int i = 0; i < m_shaderData->GetUniformNames().size(); i++)
+	{
+		std::string uniformName = m_shaderData->GetUniformNames()[i];
+		std::string uniformType = m_shaderData->GetUniformTypes()[i];
+
+		if (uniformType == "sampler2D")
+		{
+			int samplerSlot = renderingEngine->GetSamplerSlot(uniformName);
+			material.GetTexture(uniformName)->Bind(samplerSlot);
+			SetUniformi(uniformName, samplerSlot);
+		}
+		else if (uniformName.substr(0, 2) == "T_")
+		{
+			if (uniformName == "T_MVP")
+				SetUniformMatrix4f(uniformName, projectedMatrix);
+			else if (uniformName == "T_model")
+				SetUniformMatrix4f(uniformName, projectedMatrix);
+			else
+				throw "Invalid Transform Uniform: " + uniformName;
+		}
+		else if (uniformName.substr(0, 2) == "R_")
+		{
+			std::string unprefixedName = uniformName.substr(2, uniformName.length());
+
+			if (uniformType == "vec3")
+				SetUniformVector3f(uniformName, renderingEngine->GetVector3f(unprefixedName));
+			else if (uniformType == "float")
+				SetUniformf(uniformName, renderingEngine->GetFloat(unprefixedName));
+			else if (uniformType == "DirectionalLight")
+				SetUniformDirectionalLight(uniformName, *(DirectionalLight*)renderingEngine->GetActiveLight());
+			else if (uniformType == "PointLight")
+				SetUniformPointLight(uniformName, *(PointLight*)renderingEngine->GetActiveLight());
+			else if (uniformType == "SpotLight")
+				SetUniformSpotLight(uniformName, *(SpotLight*)renderingEngine->GetActiveLight());
+			else
+				renderingEngine->UpdateUniformStruct(transform, material, this, uniformName, uniformType);
+		}
+		else if (uniformName.substr(0, 2) == "C_")
+		{
+			if (uniformName == "C_eyePos")
+				SetUniformVector3f(uniformName, renderingEngine->GetMainCamera().GetTransform().GetTransformedPos());
+			else
+				throw "Invalid Camera Uniform: " + uniformName;
+		}
+		else
+		{
+			if (uniformType == "vec3")
+				SetUniformVector3f(uniformName, material.GetVector3f(uniformName));
+			else if (uniformName == "float")
+				SetUniformf(uniformName, material.GetFloat(uniformName));
+			else
+				throw uniformType + " is not supported by the Material class";
+		}
+	}
+}
+
+void Shader::SetUniformi(const std::string & uniformName, int value)
+{
+	glUniform1i(m_shaderData->GetUniformMap().at(uniformName), value);
+}
+
+void Shader::SetUniformf(const std::string & uniformName, float value)
+{
+	glUniform1f(m_shaderData->GetUniformMap().at(uniformName), value);
+}
+
+void Shader::SetUniformMatrix4f(const std::string & uniformName, const Matrix4f & value)
+{
+	glUniformMatrix4fv(m_shaderData->GetUniformMap().at(uniformName), 1, GL_FALSE, &(value[0][0]));
+}
+
+void Shader::SetUniformVector3f(const std::string & uniformName, const Vector3f & value)
+{
+	glUniform3f(m_shaderData->GetUniformMap().at(uniformName), value.GetX(), value.GetY(), value.GetZ());
+}
+
+void Shader::SetUniformDirectionalLight(const std::string & uniformName, const DirectionalLight & value)
+{
+	SetUniformVector3f(uniformName + ".direction", value.GetTransform().GetTransformedRot().GetForward());
+	SetUniformVector3f(uniformName + ".base.color", value.color);
+	SetUniformf(uniformName + ".base.intensity", value.intensity);
+}
+
+void Shader::SetUniformPointLight(const std::string & uniformName, const PointLight & value)
+{
+	SetUniformVector3f(uniformName + ".base.color", value.color);
+	SetUniformf(uniformName + ".base.intensity", value.intensity);
+	SetUniformf(uniformName + ".atten.constant", value.atten.constant);
+	SetUniformf(uniformName + ".atten.linear", value.atten.linear);
+	SetUniformf(uniformName + ".atten.exponent", value.atten.exponent);
+	SetUniformVector3f(uniformName + ".position", value.GetTransform().GetTransformedPos());
+	SetUniformf(uniformName + ".range", value.range);
+}
+
+void Shader::SetUniformSpotLight(const std::string & uniformName, const SpotLight & value)
+{
+	SetUniformVector3f(uniformName + ".pointLight.base.color", value.color);
+	SetUniformf(uniformName + ".pointLight.base.intensity", value.intensity);
+	SetUniformf(uniformName + ".pointLight.atten.constant", value.atten.constant);
+	SetUniformf(uniformName + ".pointLight.atten.linear", value.atten.linear);
+	SetUniformf(uniformName + ".pointLight.atten.exponent", value.atten.exponent);
+	SetUniformVector3f(uniformName + ".pointLight.position", value.GetTransform().GetTransformedPos());
+	SetUniformf(uniformName + ".pointLight.range", value.range);
+	SetUniformVector3f(uniformName + ".direction", value.GetTransform().GetTransformedRot().GetForward());
+	SetUniformf(uniformName + ".cutoff", value.cutoff);
+}
+
+void CheckShaderError(int shader, int flag, bool isProgram, const std::string & errorMessage)
 {
 	GLint success = 0;
 	GLchar error[1024] = { 0 };
@@ -112,14 +358,123 @@ static void CheckShaderError(GLuint shader, GLuint flag, bool isProgram, const s
 	else
 		glGetShaderiv(shader, flag, &success);
 
-	if (success == GL_FALSE)
+	if (!success)
 	{
 		if (isProgram)
 			glGetProgramInfoLog(shader, sizeof(error), NULL, error);
 		else
 			glGetShaderInfoLog(shader, sizeof(error), NULL, error);
-
-		std::cerr << errorMessage << ": '" << error << "'" << std::endl;
+		fprintf(stderr, "%s: '%s'\n", errorMessage.c_str(), error);
 	}
 }
 
+std::vector<UniformStruct> FindUniformStructs(const std::string & shaderText)
+{
+	static const std::string STRUCT_KEY = "struct";
+	std::vector<UniformStruct> result;
+
+	size_t structLocation = shaderText.find(STRUCT_KEY);
+	while (structLocation != std::string::npos)
+	{
+		structLocation += STRUCT_KEY.length() + 1;
+
+		size_t braceOpening = shaderText.find("{", structLocation);
+		size_t braceClosing = shaderText.find("}", braceClosing);
+
+		UniformStruct newStruct;
+
+		newStruct.name = FindUniformStructName(shaderText.substr(structLocation, braceOpening - structLocation));
+		newStruct.memberNames = FindUniformStructComponents(shaderText.substr(braceOpening, braceClosing - braceOpening));
+
+		result.push_back(newStruct);
+		structLocation = shaderText.find(STRUCT_KEY, structLocation);
+	}
+
+	return result;
+}
+
+std::string FindUniformStructName(const std::string & structStartToOpeningBrace)
+{
+	return Util::Split(Util::Split(structStartToOpeningBrace, ' ')[0], '\n')[0];
+}
+
+std::vector<TypedData> FindUniformStructComponents(const std::string & openingBraceToClosingBrace)
+{
+	static const char charsToIgnore[] = { ' ', '\n', '\t', '{' };
+	static const size_t UNSIGNED_NEG_ONE = (size_t)-1;
+
+	std::vector<TypedData> result;
+	std::vector<std::string> structLines = Util::Split(openingBraceToClosingBrace, ';');
+
+	for (unsigned int i = 0; i < structLines.size(); i++)
+	{
+		size_t nameBegin = UNSIGNED_NEG_ONE;
+		size_t nameEnd = UNSIGNED_NEG_ONE;
+
+		for (unsigned int j = 0; j < structLines[i].length(); j++)
+		{
+			bool isIgnoredCharacter = false;
+
+			for (unsigned int k = 0; k < sizeof(charsToIgnore) / sizeof(char); k++)
+			{
+				if (structLines[i][k] == charsToIgnore[k])
+				{
+					isIgnoredCharacter = true;
+					break;
+				}
+			}
+
+			if (nameBegin == UNSIGNED_NEG_ONE && isIgnoredCharacter == false)
+				nameBegin = j;
+			else if (nameBegin != UNSIGNED_NEG_ONE && isIgnoredCharacter)
+			{
+				nameEnd = j;
+				break;
+			}
+		}
+
+		if (nameBegin == UNSIGNED_NEG_ONE || nameEnd == UNSIGNED_NEG_ONE)
+			continue;
+
+		TypedData newData;
+		newData.type = structLines[i].substr(nameBegin, nameEnd - nameBegin);
+		newData.name = structLines[i].substr(nameEnd + 1);
+
+		result.push_back(newData);
+	}
+
+	return result;
+}
+
+std::string LoadShader(const std::string & fileName)
+{
+	std::ifstream file;
+	file.open(("./res/shader/" + fileName).c_str());
+
+	std::string output;
+	std::string line;
+
+	if (file.is_open())
+	{
+		while (file.good())
+		{
+			getline(file, line);
+
+			if (line.find("#include") == std::string::npos)
+				output.append(line + "\n");
+			else
+			{
+				std::string includeFileName = Util::Split(line, ' ')[1];
+				includeFileName = includeFileName.substr(1, includeFileName.length() - 2);
+				std::string toAppend = LoadShader(includeFileName);
+				output.append(toAppend + "\n");
+			}
+		}
+	}
+	else
+	{
+		std::cerr << "Unable to load shader: " << fileName << std::endl;
+	}
+
+	return output;
+}

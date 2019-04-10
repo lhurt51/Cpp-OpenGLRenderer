@@ -1,36 +1,88 @@
 #pragma once
 
+#include <map>
+#include <vector>
 #include <string>
-#include <GL/glew.h>
 
+#include "Utils\ReferenceCounter.h"
+#include "Utils\Math\MathUtils.h"
 #include "Material.h"
+#include "RenderingEngine.h"
+#include "Lighting\Lighting.h"
+#include "Transform.h"
 
-class Transform;
-class Camera;
+struct TypedData
+{
+	std::string name;
+	std::string type;
+};
+
+struct UniformStruct
+{
+	std::string name;
+	std::vector<TypedData> memberNames;
+};
+
+class ShaderData : public ReferenceCounter
+{
+
+	int m_program;
+	std::vector<int> m_shaders;
+	std::vector<std::string> m_uniformNames;
+	std::vector<std::string> m_uniformTypes;
+	std::map<std::string, unsigned int> m_uniformMap;
+
+public:
+
+	ShaderData(const std::string& fileName);
+	virtual ~ShaderData();
+
+	inline int GetProgram() { return m_program; }
+	inline std::vector<int>& GetShader() { return m_shaders; }
+	inline std::vector<std::string>& GetUniformNames() { return m_uniformNames; }
+	inline std::vector<std::string>& GetUniformTypes() { return m_uniformTypes; }
+	inline std::map<std::string, unsigned int>& GetUniformMap() { return m_uniformMap; }
+
+private:
+
+	void AddVertexShader(const std::string& text);
+	void AddGeometryShader(const std::string& text);
+	void AddFragmentShader(const std::string& text);
+	void AddProgram(const std::string& text, int type);
+
+	void AddAllAttributes(const std::string& vertexShaderText);
+	void AddShaderUniforms(const std::string& shaderText);
+	void AddUniform(const std::string& uniformName, const std::string& uniformType, const std::vector<UniformStruct>& structs);
+	void CompileShader();
+
+};
 
 class Shader
 {
-	enum
-	{
-		MVP_U,
-		NORMAL_U,
-		LIGHTDIRECTION_U,
-		NUM_UNIFORMS
-	};
+	
+	static std::map<std::string, ShaderData*> s_resourceMap;
 
-	static const unsigned int NUM_SHADERS = 2;
-	GLuint m_program;
-	GLuint m_shaders[NUM_SHADERS];
-	GLuint m_uniforms[NUM_UNIFORMS];
+	ShaderData* m_shaderData;
+	std::string m_fileName;
 
 public:
 
 	Shader(const std::string& fileName);
 	virtual ~Shader();
 
-	// Bind the vertex and fragment shaders
-	void Bind(void);
-	void Update(const Transform& transform, const Camera& camera);
+	void Bind();
+	virtual void UpdateUniforms(const Transform& transform, const Material& material, RenderingEngine* renderingEngine);
+
+	void SetUniformi(const std::string& uniformName, int value);
+	void SetUniformf(const std::string& uniformName, float value);
+	void SetUniformMatrix4f(const std::string& uniformName, const Matrix4f& value);
+	void SetUniformVector3f(const std::string& uniformName, const Vector3f& value);
+
+private:
+
+	void SetUniformDirectionalLight(const std::string& uniformName, const DirectionalLight& value);
+	void SetUniformPointLight(const std::string& uniformName, const PointLight& value);
+	void SetUniformSpotLight(const std::string& uniformName, const SpotLight& value);
 
 };
 

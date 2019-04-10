@@ -1,60 +1,46 @@
 #pragma once
 
-#include <glm/glm.hpp>
-#include <GL/glew.h>
-#include "ObjLoader/obj_loader.h"
+#include <map>
+#include "Mesh\Vertex.h"
+#include "Utils\ReferenceCounter.h"
 
-class Vertex
+class MeshData : public ReferenceCounter
 {
-private:
 
-	glm::vec3 pos;
-	glm::vec2 texCoord;
-	glm::vec3 normal;
-
-protected:
+	unsigned int m_vbo;
+	unsigned int m_ibo;
+	int m_size;
 
 public:
 
-	Vertex(const glm::vec3& pos, const glm::vec2& texCoord, const glm::vec3& normal = glm::vec3(0,0,0))
-	{
-		this->pos = pos;
-		this->texCoord = texCoord;
-		this->normal = normal;
-	}
+	MeshData(int indexSize);
+	virtual ~MeshData();
 
-	inline glm::vec3* GetPos() { return &pos; }
-	inline glm::vec2* GetTexCoord() { return &texCoord; }
-	inline glm::vec3* GetNormal() { return &normal; }
+	inline unsigned int GetVBO() { return m_vbo; }
+	inline unsigned int GetIBO() { return m_ibo; }
+	inline unsigned int GetSize() { return m_size; }
+
 };
 
 class Mesh
 {
 
-	enum
-	{
-		POSITION_VB,
-		TEXTCOORD_VB,
-		NORMAL_VB,
-		INDEX_VB,
-		NUM_BUFFERS
-	};
-
-	GLuint m_vertexArrayObject;
-	GLuint m_vertexArrayBuffers[NUM_BUFFERS];
-	unsigned int m_drawCount;
+	static std::map<std::string, MeshData*> s_resourceMap;
+	std::string m_fileName;
+	MeshData* m_meshData;
 
 public:
 
 	Mesh(const std::string& fileName);
-	Mesh(Vertex* vertices, unsigned int numVertices, unsigned int* indices, unsigned int numIndices);
+	Mesh(Vertex* vertices, int vertSize, int* indices, unsigned int indexSize, bool calcNormals);
 	virtual ~Mesh();
 
 	void Draw();
 
 private:
 
-	void InitMesh(const IndexedModel& model);
+	void CalcNormals(Vertex* vertices, int vertSize, int* indices, int indexSize);
+	void InitMesh(Vertex* vertices, int vertSize, int* indices, int indexSize, bool calcNormals = true);
 
 };
 

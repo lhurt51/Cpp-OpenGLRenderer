@@ -1,109 +1,150 @@
 #include "Mesh.h"
-#include <vector>
+#include <GL/glew.h>
+#include <iostream>
 
+#include <vector>
+#include <cassert>
+
+#include <assimp\Importer.hpp>
+#include <assimp\scene.h>
+#include <assimp\postprocess.h>
+
+std::map<std::string, MeshData*> Mesh::s_resourceMap;
+
+MeshData::MeshData(int indexSize) : ReferenceCounter()
+{
+	glGenBuffers(1, &m_vbo);
+	glGenBuffers(1, &m_ibo);
+	m_size = indexSize;
+}
+
+MeshData::~MeshData()
+{
+	if (m_vbo) glDeleteBuffers(1, &m_vbo);
+	if (m_ibo) glDeleteBuffers(1, &m_ibo);
+}
 
 Mesh::Mesh(const std::string & fileName)
 {
-	IndexedModel model = OBJModel(fileName).ToIndexedModel();
-	InitMesh(model);
+	m_fileName = fileName;
+	m_meshData = 0;
+
+	std::map<std::string, MeshData*>::const_iterator it = s_resourceMap.find(fileName);
+	if (it != s_resourceMap.end())
+	{
+		m_meshData = it->second;
+		m_meshData->AddReference();
+	}
+	else
+	{
+		Assimp::Importer importer;
+		const aiScene* scene = importer.ReadFile(fileName.c_str(), aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs);
+
+		if (!scene)
+		{
+			std::cout << "Mesh load failed: " << fileName << std::endl;
+			assert(0 == 0);
+		}
+
+		const aiMesh* model = scene->mMeshes[0];
+
+		std::vector<Vertex> vertices;
+		std::vector<int> indices;
+
+		const aiVector3D aiZeroVector(0.0f, 0.0f, 0.0f);
+		for (unsigned int i = 0; i < model->mNumVertices; i++)
+		{
+			const aiVector3D* pPos = &(model->mVertices[i]);
+			const aiVector3D* pNormal = &(model->mNormals[i]);
+			const aiVector3D* pTexCoord = model->HasTextureCoords(0) ? &(model->mTextureCoords[0][i]) : &aiZeroVector;
+
+			Vertex vert(Vector3f(pPos->x, pPos->y, pPos->z), Vector2f(pTexCoord->x, pTexCoord->y), Vector3f(pNormal->x, pNormal->y, pNormal->z));
+
+			vertices.push_back(vert);
+		}
+
+		for (unsigned int i = 0; i < model->mNumFaces; i++)
+		{
+			const aiFace& face = model->mFaces[i];
+			assert(face.mNumIndices == 3);
+			indices.push_back(face.mIndices[0]);
+			indices.push_back(face.mIndices[1]);
+			indices.push_back(face.mIndices[2]);
+		}
+
+		InitMesh(&vertices[0], vertices.size(), (int*)&indices[0], indices.size(), false);
+
+		s_resourceMap.insert(std::pair<std::string, MeshData*>(fileName, m_meshData));
+	}
 }
 
-Mesh::Mesh(Vertex* vertices, unsigned int numVertices, unsigned int* indices, unsigned int numIndices)
+Mesh::Mesh(Vertex* vertices, int vertSize, int* indices, unsigned int indexSize, bool calcNormals)
 {
-	IndexedModel model;
-
-	for (unsigned int i = 0; i < numVertices; i++)
-	{
-		model.positions.push_back(*vertices[i].GetPos());
-		model.texCoords.push_back(*vertices[i].GetTexCoord());
-		model.normals.push_back(*vertices[i].GetNormal());
-	}
-
-	for (unsigned int i = 0; i < numIndices; i++)
-		model.indices.push_back(indices[i]);
-
-	InitMesh(model);
-
-	/*
-	m_drawCount = numIndices;
-
-	glGenVertexArrays(1, &m_vertexArrayObject);
-	glBindVertexArray(m_vertexArrayObject);
-
-	std::vector<glm::vec3> positions;
-	std::vector<glm::vec2> texCoords;
-
-	positions.reserve(numVertices);
-	texCoords.reserve(numVertices);
-
-	for (unsigned int i = 0; i < numVertices; i++)
-	{
-		positions.push_back(*vertices[i].GetPos());
-		texCoords.push_back(*vertices[i].GetTexCoord());
-	}
-
-	glGenBuffers(NUM_BUFFERS, m_vertexArrayBuffers);
-	glBindBuffer(GL_ARRAY_BUFFER, m_vertexArrayBuffers[POSITION_VB]);
-	glBufferData(GL_ARRAY_BUFFER, numVertices * sizeof(positions[0]), &positions[0], GL_STATIC_DRAW);
-
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-
-	glBindBuffer(GL_ARRAY_BUFFER, m_vertexArrayBuffers[TEXTCOORD_VB]);
-	glBufferData(GL_ARRAY_BUFFER, numVertices * sizeof(texCoords[0]), &texCoords[0], GL_STATIC_DRAW);
-
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_vertexArrayBuffers[INDEX_VB]);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, numIndices * sizeof(indices[0]), &indices[0], GL_STATIC_DRAW);
-
-	glBindVertexArray(0);
-	*/
+	m_fileName = "";
+	InitMesh(vertices, vertSize, indices, indexSize);
 }
 
 Mesh::~Mesh()
 {
-	glDeleteBuffers(NUM_BUFFERS, m_vertexArrayBuffers);
-	glDeleteVertexArrays(1, &m_vertexArrayObject);
+	if (m_meshData && m_meshData->RemoveReference())
+	{
+		if (m_fileName.length() > 0)
+			s_resourceMap.erase(m_fileName);
+		delete m_meshData;
+	}
 }
 
 void Mesh::Draw()
 {
-	glBindVertexArray(m_vertexArrayObject);
+	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
+	glEnableVertexAttribArray(2);
 
-	glDrawElementsBaseVertex(GL_TRIANGLES, m_drawCount, GL_UNSIGNED_INT, 0, 0);
-	//glDrawArrays(GL_TRIANGLES, 0, m_drawCount);
+	glBindBuffer(GL_ARRAY_BUFFER, m_meshData->GetVBO());
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)sizeof(Vector3f));
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)(sizeof(Vector3f) + sizeof(Vector2f)));
 
-	glBindVertexArray(0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_meshData->GetIBO());
+	glDrawElements(GL_TRIANGLES, m_meshData->GetSize(), GL_UNSIGNED_INT, 0);
+
+	glDisableVertexAttribArray(0);
+	glDisableVertexAttribArray(1);
+	glDisableVertexAttribArray(2);
 }
 
-void Mesh::InitMesh(const IndexedModel & model)
+void Mesh::CalcNormals(Vertex * vertices, int vertSize, int * indices, int indexSize)
 {
-	m_drawCount = model.indices.size();
+	for (int i = 0; i < indexSize; i += 3)
+	{
+		int i0 = indices[i];
+		int i1 = indices[i + 1];
+		int i2 = indices[i + 2];
 
-	glGenVertexArrays(1, &m_vertexArrayObject);
-	glBindVertexArray(m_vertexArrayObject);
+		Vector3f v1 = vertices[i1].pos - vertices[i0].pos;
+		Vector3f v2 = vertices[i2].pos - vertices[i0].pos;
 
-	glGenBuffers(NUM_BUFFERS, m_vertexArrayBuffers);
+		Vector3f normal = v1.Cross(v2).Normalized();
 
-	glBindBuffer(GL_ARRAY_BUFFER, m_vertexArrayBuffers[POSITION_VB]);
-	glBufferData(GL_ARRAY_BUFFER, model.positions.size() * sizeof(model.positions[0]), &model.positions[0], GL_STATIC_DRAW);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+		vertices[i0].normal += normal;
+		vertices[i1].normal += normal;
+		vertices[i2].normal += normal;
+	}
 
-	glBindBuffer(GL_ARRAY_BUFFER, m_vertexArrayBuffers[TEXTCOORD_VB]);
-	glBufferData(GL_ARRAY_BUFFER, model.texCoords.size() * sizeof(model.texCoords[0]), &model.texCoords[0], GL_STATIC_DRAW);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	for (int i = 0; i < vertSize; i++)
+		vertices[i].normal = vertices[i].normal.Normalized();
+}
 
-	glBindBuffer(GL_ARRAY_BUFFER, m_vertexArrayBuffers[NORMAL_VB]);
-	glBufferData(GL_ARRAY_BUFFER, model.normals.size() * sizeof(model.normals[0]), &model.normals[0], GL_STATIC_DRAW);
-	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
+void Mesh::InitMesh(Vertex * vertices, int vertSize, int * indices, int indexSize, bool calcNormals)
+{
+	m_meshData = new MeshData(indexSize);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_vertexArrayBuffers[INDEX_VB]);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, model.indices.size() * sizeof(model.indices[0]), &model.indices[0], GL_STATIC_DRAW);
+	if (calcNormals)
+		this->CalcNormals(vertices, vertSize, indices, indexSize);
 
-	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, m_meshData->GetVBO());
+	glBufferData(GL_ARRAY_BUFFER, vertSize * sizeof(Vertex), vertices, GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_meshData->GetIBO());
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexSize * sizeof(int), indices, GL_STATIC_DRAW);
 }
