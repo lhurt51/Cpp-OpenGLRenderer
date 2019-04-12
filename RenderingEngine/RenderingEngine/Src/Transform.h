@@ -20,7 +20,7 @@ class Transform
 
 public:
 
-	Transform(const Vector3f& pos = Vector3f(), const Quaternion& rot = Quaternion(), float scale = 1.0f);
+	Transform(const Vector3f& pos = Vector3f(), const Quaternion& rot = Quaternion(0,0,0,1), float scale = 1.0f);
 
 	inline Vector3f& GetPos() { return m_pos; }
 	inline const Vector3f& GetPos() const { return m_pos; }

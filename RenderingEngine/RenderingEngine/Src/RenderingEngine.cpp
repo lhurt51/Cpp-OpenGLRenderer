@@ -1,6 +1,5 @@
 #include "RenderingEngine.h"
-
-// #include "Window.h"
+#include "Window.h"
 #include "GameObject.h"
 #include "Shader.h"
 #include <GL/glew.h>

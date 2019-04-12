@@ -4,18 +4,18 @@
 #include "Utils\Rendering\RenderUtil.h"
 #include "Window.h"
 #include "Input\Input.h"
-// #include "Game.h"
+#include "Game.h"
 
 
-CoreEngine::CoreEngine(int width, int height, double frameRate) :
+CoreEngine::CoreEngine(int width, int height, double frameRate, Game* game) :
 	m_isRunning(false),
 	m_width(width),
 	m_height(height),
-	m_frameTime(1.0/frameRate)/*,
+	m_frameTime(1.0/frameRate),
 	m_game(game),
-	m_renderingEngine(NULL)*/
+	m_renderingEngine(NULL)
 {
-	//m_game->SetEngine(this);
+	m_game->SetEngine(this);
 }
 
 CoreEngine::~CoreEngine()
@@ -51,7 +51,7 @@ void CoreEngine::Run()
 {
 	m_isRunning = true;
 
-	//m_game->Init();
+	m_game->Init();
 
 	double lastTime = Time::GetTime();
 	double unprocessedTime = 0;
@@ -85,15 +85,15 @@ void CoreEngine::Run()
 
 			Input::Update();
 
-			// m_game->Input((float)m_frameTime);
-			// m_game->Update((float)m_frameTime);
+			m_game->Input((float)m_frameTime);
+			m_game->Update((float)m_frameTime);
 
 			unprocessedTime -= m_frameTime;
 		}
 
 		if (render)
 		{
-			//m_game->Render(m_renderingEngine);
+			m_game->Render(m_renderingEngine);
 			Window::Render();
 			frames++;
 		}

@@ -187,5 +187,8 @@
     <None Include="Res\shaders\forward-point.vs" />
     <None Include="Res\shaders\forward-spot.fs" />
     <None Include="Res\shaders\forward-spot.vs" />
+    <None Include="Res\shaders\lighting.glh" />
+    <None Include="Res\shaders\lighting.fsh" />
+    <None Include="Res\shaders\lightingMain.fsh" />
   </ItemGroup>
 </Project>

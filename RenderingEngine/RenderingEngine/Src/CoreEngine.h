@@ -3,7 +3,7 @@
 #include <string>
 #include "RenderingEngine.h"
 
-//class Game;
+class Game;
 
 class CoreEngine
 {
@@ -12,13 +12,12 @@ class CoreEngine
 	int m_width;
 	int m_height;
 	double m_frameTime;
-	// Game* m_game;
+	Game* m_game;
 	RenderingEngine* m_renderingEngine;
 
 public:
 
-	CoreEngine(int width, int height, double frameRate);
-	// CoreEngine(int width, int height, double frameRate, Game* game);
+	CoreEngine(int width, int height, double frameRate, Game* game);
 	virtual ~CoreEngine();
 
 	void CreateWindow(const std::string& title);

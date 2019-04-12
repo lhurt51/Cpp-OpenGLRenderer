@@ -24,7 +24,7 @@ struct DirectionalLight
 struct PointLight
 {
 	BaseLight base;
-	Attentuation atten;
+	Attenuation atten;
 	vec3 position;
 	float range;
 };
@@ -48,12 +48,14 @@ vec4 CalcLight(BaseLight base, vec3 direction, vec3 normal, vec3 worldPos)
 		diffuseColor = vec4(base.color, 1.0) * base.intensity * diffuseFactor;
 
 		vec3 directionToEye = normalize(C_eyePos - worldPos);
-		vec3 halfDirection = normalize(directionToEye, reflectDirection);
-		specularFactor = pow(specularFactor, specularPow);
+		vec3 halfDirection = normalize(directionToEye - direction);
+
+		float specularFactor = dot(halfDirection, normal);
+		specularFactor = pow(specularFactor, specularPower);
 
 		if (specularFactor > 0)
 		{
-			specularColor = vec4(base.color, 1.0) * specularInensity * specularFactor;
+			specularColor = vec4(base.color, 1.0) * specularIntensity * specularFactor;
 		}
 	}
 

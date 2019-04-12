@@ -17,10 +17,11 @@ public:
 
 	inline Vector3f GetVector3f(const std::string& name) const
 	{
-		std::map<std::string, float>::const_iterator it = m_floatMap.find(name);
-		if (it != m_floatMap.end())
+		std::map<std::string, Vector3f>::const_iterator it = m_vector3fMap.find(name);
+		if (it != m_vector3fMap.end())
 			return it->second;
-		return 0;
+
+		return Vector3f(0,0,0);
 	}
 
 	inline float GetFloat(const std::string& name) const

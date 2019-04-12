@@ -289,7 +289,7 @@ void Shader::UpdateUniforms(const Transform & transform, const Material & materi
 		{
 			if (uniformType == "vec3")
 				SetUniformVector3f(uniformName, material.GetVector3f(uniformName));
-			else if (uniformName == "float")
+			else if (uniformType == "float")
 				SetUniformf(uniformName, material.GetFloat(uniformName));
 			else
 				throw uniformType + " is not supported by the Material class";
@@ -379,7 +379,7 @@ std::vector<UniformStruct> FindUniformStructs(const std::string & shaderText)
 		structLocation += STRUCT_KEY.length() + 1;
 
 		size_t braceOpening = shaderText.find("{", structLocation);
-		size_t braceClosing = shaderText.find("}", braceClosing);
+		size_t braceClosing = shaderText.find("}", braceOpening);
 
 		UniformStruct newStruct;
 
@@ -414,10 +414,10 @@ std::vector<TypedData> FindUniformStructComponents(const std::string & openingBr
 		for (unsigned int j = 0; j < structLines[i].length(); j++)
 		{
 			bool isIgnoredCharacter = false;
-
 			for (unsigned int k = 0; k < sizeof(charsToIgnore) / sizeof(char); k++)
 			{
-				if (structLines[i][k] == charsToIgnore[k])
+				assert(j < structLines[i].size());
+				if (structLines[i][j] == charsToIgnore[k])
 				{
 					isIgnoredCharacter = true;
 					break;
@@ -425,7 +425,9 @@ std::vector<TypedData> FindUniformStructComponents(const std::string & openingBr
 			}
 
 			if (nameBegin == UNSIGNED_NEG_ONE && isIgnoredCharacter == false)
+			{
 				nameBegin = j;
+			}
 			else if (nameBegin != UNSIGNED_NEG_ONE && isIgnoredCharacter)
 			{
 				nameEnd = j;
@@ -449,7 +451,7 @@ std::vector<TypedData> FindUniformStructComponents(const std::string & openingBr
 std::string LoadShader(const std::string & fileName)
 {
 	std::ifstream file;
-	file.open(("./res/shader/" + fileName).c_str());
+	file.open(("./Res/shaders/" + fileName).c_str());
 
 	std::string output;
 	std::string line;

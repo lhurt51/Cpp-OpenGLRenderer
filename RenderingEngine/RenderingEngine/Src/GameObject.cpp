@@ -5,10 +5,12 @@
 GameObject::~GameObject()
 {
 	for (unsigned int i = 0; i < m_components.size(); i++)
-		if (m_components[i]) delete m_components[i];
+		if (m_components[i])
+			delete m_components[i];
 
 	for (unsigned int i = 0; i < m_children.size(); i++)
-		if (m_children[i]) delete m_children[i];
+		if (m_children[i])
+			delete m_children[i];
 }
 
 GameObject * GameObject::AddChild(GameObject * child)
@@ -19,11 +21,11 @@ GameObject * GameObject::AddChild(GameObject * child)
 	return this;
 }
 
-GameObject * GameObject::AddComponent(GameComponent * component)
+GameObject* GameObject::AddComponent(GameComponent* component)
 {
 	m_components.push_back(component);
 	component->SetParent(this);
-	return nullptr;
+	return this;
 }
 
 void GameObject::InputAll(float delta)

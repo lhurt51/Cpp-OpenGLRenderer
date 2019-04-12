@@ -3,7 +3,6 @@
 #include "Transform.h"
 #include "GameObject.h"
 
-class CoreEngine;
 class RenderingEngine;
 class Shader;
 

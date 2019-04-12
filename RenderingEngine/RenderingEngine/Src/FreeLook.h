@@ -12,7 +12,7 @@ class FreeLook : public GameComponent
 
 public:
 
-	FreeLook(float sensitivity = 0.5f, int unlockMouseKey = Input::KEY_ESCAPE);
+	FreeLook(float sensitivity = 0.02f, int unlockMouseKey = Input::KEY_ESCAPE);
 
 	virtual void Input(float delta);
 
