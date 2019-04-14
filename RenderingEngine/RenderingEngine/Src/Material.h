@@ -12,12 +12,17 @@ public:
 
 	Material() {}
 
-	Material(Texture* diffuse, float specularIntensity, float specularPower, Texture* normalMap = new Texture("default_normal.jpg"))
+	Material(Texture* diffuse, float specularIntensity, float specularPower, Texture* normalMap = new Texture("default_normal.jpg"), Texture* dispMap = new Texture("default_disp.png"), float dispMapScale = 0.0f, float dispMapOffset = 0.0f)
 	{
 		AddTexture("diffuse", diffuse);
 		AddFloat("specularIntensity", specularIntensity);
 		AddFloat("specularPower", specularPower);
 		AddTexture("normalMap", normalMap);
+		AddTexture("dispMap", dispMap);
+
+		float baseBias = dispMapScale / 2.0f;
+		AddFloat("dispMapScale", dispMapScale);
+		AddFloat("dispMapBias", -baseBias + baseBias * dispMapOffset);
 	}
 
 	virtual ~Material()

@@ -198,6 +198,7 @@
     <None Include="Res\shaders\lighting.fsh" />
     <None Include="Res\shaders\lighting.glh" />
     <None Include="Res\shaders\lightingMain.fsh" />
+    <None Include="Res\shaders\sampling.glh" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
