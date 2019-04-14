@@ -30,6 +30,8 @@ RenderingEngine::~RenderingEngine()
 
 void	RenderingEngine::Render(GameObject* object)
 {
+	Window::BindAsRenderTarget();
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	object->RenderAll(m_defaultShader, this);
 
