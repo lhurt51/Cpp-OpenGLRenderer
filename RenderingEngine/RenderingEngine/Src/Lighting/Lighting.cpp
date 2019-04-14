@@ -21,18 +21,18 @@ void BaseLight::SetShader(Shader * shader)
 	m_shader = shader;
 }
 
-DirectionalLight::DirectionalLight(const Vector3f & color, float intensity) : BaseLight(color, intensity)
+DirectionalLight::DirectionalLight(const Vector3f& color, float intensity) : BaseLight(color, intensity)
 {
 	SetShader(new Shader("forward-directional"));
 }
 
-PointLight::PointLight(const Vector3f & color, float intensity, const Attenuation & atten) : BaseLight(color, intensity), atten(atten)
+PointLight::PointLight(const Vector3f& color, float intensity, const Attenuation & atten) : BaseLight(color, intensity), atten(atten)
 {
 	float a = atten.exponent;
 	float b = atten.linear;
 	float c = atten.constant - COLOR_DEPTH * intensity * color.Max();
 
-	range = (-b + sqrtf(b*b - 4 * a*c)) / (2 * a);
+	range = (-b + sqrtf(b * b - 4 * a * c)) / (2 * a);
 
 	SetShader(new Shader("forward-point"));
 }

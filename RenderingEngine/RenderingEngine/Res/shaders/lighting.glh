@@ -74,10 +74,7 @@ vec4 CalcPointLight(PointLight pointLight, vec3 normal, vec3 worldPos)
 
 	vec4  color = CalcLight(pointLight.base, lightDirection, normal, worldPos);
 
-	float attenuation = pointLight.atten.constant +
-		pointLight.atten.linear * distanceToPoint +
-		pointLight.atten.exponent * distanceToPoint * distanceToPoint +
-		0.0001;
+	float attenuation = pointLight.atten.constant + pointLight.atten.linear * distanceToPoint + pointLight.atten.exponent * distanceToPoint * distanceToPoint + 0.0001;
 	
 	return color / attenuation;
 }
@@ -91,8 +88,7 @@ vec4 CalcSpotLight(SpotLight spotLight, vec3 normal, vec3 worldPos)
 
 	if (spotFactor > spotLight.cutoff)
 	{
-		color = CalcPointLight(spotLight.pointLight, normal, worldPos) *
-			(1.0 - (1.0 - spotFactor)/(1.0 - spotLight.cutoff));
+		color = CalcPointLight(spotLight.pointLight, normal, worldPos) * (1.0 - (1.0 - spotFactor)/(1.0 - spotLight.cutoff));
 	}
 	return color;
 }

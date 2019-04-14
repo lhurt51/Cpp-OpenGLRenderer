@@ -257,7 +257,7 @@ void Shader::UpdateUniforms(const Transform & transform, const Material & materi
 			if (uniformName == "T_MVP")
 				SetUniformMatrix4f(uniformName, projectedMatrix);
 			else if (uniformName == "T_model")
-				SetUniformMatrix4f(uniformName, projectedMatrix);
+				SetUniformMatrix4f(uniformName, worldMatrix);
 			else
 				throw "Invalid Transform Uniform: " + uniformName;
 		}

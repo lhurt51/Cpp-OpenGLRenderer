@@ -6,7 +6,6 @@ class Transform
 {
 
 	Vector3f m_pos;
-	// Look up Quaternions
 	Quaternion m_rot;
 	float m_scale;
 

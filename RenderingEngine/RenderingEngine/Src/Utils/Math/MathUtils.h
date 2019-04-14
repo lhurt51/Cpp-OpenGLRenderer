@@ -42,7 +42,7 @@ public:
 	}
 
 	inline T LengthSq() const { return this->Dot(*this); }
-	inline T Length() const { return sqrtf(LengthSq()); }
+	inline T Length() const { return sqrt(LengthSq()); }
 	inline Vector<T, D> Normalized() const { return *this / Length(); }
 	inline Vector<T, D> Lerp(const Vector<T, D>& r, T lerpFactor) const { return (r - *this) * lerpFactor + *this; }
 
@@ -59,22 +59,6 @@ public:
 		Vector<T, D> result;
 		for (unsigned int i = 0; i < D; i++)
 			result[i] = values[i] - r[i];
-		return result;
-	}
-
-	inline Vector<T, D> operator*(const Vector<T, D>& r) const
-	{
-		Vector<T, D> result;
-		for (unsigned int i = 0; i < D; i++)
-			result[i] = values[i] * r[i];
-		return result;
-	}
-
-	inline Vector<T, D> operator/(const Vector<T, D>& r) const
-	{
-		Vector<T, D> result;
-		for (unsigned int i = 0; i < D; i++)
-			result[i] = values[i] / r[i];
 		return result;
 	}
 
@@ -107,20 +91,6 @@ public:
 	{
 		for (unsigned int i = 0; i < D; i++)
 			(*this)[i] = values[i] - r[i];
-		return *this;
-	}
-
-	inline Vector<T, D> operator*=(const Vector<T, D>& r)
-	{
-		for (unsigned int i = 0; i < D; i++)
-			(*this)[i] = values[i] * r[i];
-		return *this;
-	}
-
-	inline Vector<T, D> operator/=(const Vector<T, D>& r)
-	{
-		for (unsigned int i = 0; i < D; i++)
-			(*this)[i] = values[i] / r[i];
 		return *this;
 	}
 
@@ -258,14 +228,6 @@ public:
 		(*this)[3] = r[3];
 	}
 
-	Vector4(const Vector<T, 3>& r)
-	{
-		(*this)[0] = r[0];
-		(*this)[1] = r[1];
-		(*this)[2] = r[2];
-		(*this)[3] = T(1);
-	}
-
 	Vector4(T x, T y, T z, T w)
 	{
 		(*this)[0] = x;
@@ -307,13 +269,10 @@ public:
 		{
 			for (unsigned int j = 0; j < D; j++)
 			{
-				for (unsigned int j = 0; j < D; j++)
-				{
-					if (i == j)
-						m[i][j] = T(1);
-					else
-						m[i][j] = T(0);
-				}
+				if (i == j)
+					m[i][j] = T(1);
+				else
+					m[i][j] = T(0);
 			}
 		}
 		return *this;
@@ -535,22 +494,10 @@ public:
 		const T y = rotateY;
 		const T z = rotateZ;
 
-		rx[0][0] = T(1);
-		rx[1][0] = T(0);
-		rx[2][0] = T(0);
-		rx[3][0] = T(0);
-		rx[0][1] = T(0);
-		rx[1][1] = cos(x); 
-		rx[2][1] = -sin(x);
-		rx[3][1] = T(0);
-		rx[0][2] = T(0);
-		rx[1][2] = sin(x);
-		rx[2][2] = cos(x);
-		rx[3][2] = T(0);
-		rx[0][3] = T(0);
-		rx[1][3] = T(0); 
-		rx[2][3] = T(0);
-		rx[3][3] = T(1);
+		rx[0][0] = T(1); rx[1][0] = T(0); rx[2][0] = T(0); rx[3][0] = T(0);
+		rx[0][1] = T(0); rx[1][1] = cos(x); rx[2][1] = -sin(x); rx[3][1] = T(0);
+		rx[0][2] = T(0); rx[1][2] = sin(x); rx[2][2] = cos(x); rx[3][2] = T(0);
+		rx[0][3] = T(0); rx[1][3] = T(0); rx[2][3] = T(0); rx[3][3] = T(1);
 
 		ry[0][0] = cos(y);
 		ry[1][0] = T(0);
@@ -680,9 +627,9 @@ public:
 
 	Vector3f(const Vector3<float>& r)
 	{
-		(*this)[0] = r.GetX();
-		(*this)[1] = r.GetY();
-		(*this)[2] = r.GetZ();
+		(*this)[0] = r[0];
+		(*this)[1] = r[1];
+		(*this)[2] = r[2];
 	}
 
 	inline float GetX() const { return (*this)[0]; }
@@ -711,9 +658,9 @@ public:
 
 	inline Vector3f& operator-=(const Vector3f& r)
 	{
-		(*this)[0] -= r[0];
-		(*this)[1] -= r[1];
-		(*this)[2] -= r[2];
+		(*this)[0] -= r.GetX();
+		(*this)[1] -= r.GetY();
+		(*this)[2] -= r.GetZ();
 
 		return *this;
 	}
@@ -797,7 +744,7 @@ class Quaternion : public Vector4<float>
 {
 public:
 
-	Quaternion(float x = 0.0f, float y = 0.0f, float z = 0.0f, float w = 0.0f)
+	Quaternion(float x = 0.0f, float y = 0.0f, float z = 0.0f, float w = 1.0f)
 	{
 		(*this)[0] = x;
 		(*this)[1] = y;
@@ -923,7 +870,7 @@ public:
 		float invSin = 1.0f / sin;
 
 		float srcFactor = sinf((1.0f - lerpFactor) * angle) * invSin;
-		float destFactor = sinf((lerpFactor)* angle) * invSin;
+		float destFactor = sinf((lerpFactor) * angle) * invSin;
 
 		return Quaternion((*this) * srcFactor + correctedDest * destFactor);
 	}
