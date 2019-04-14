@@ -12,11 +12,12 @@ public:
 
 	Material() {}
 
-	Material(Texture* diffuse, float specularIntensity, float specularPower)
+	Material(Texture* diffuse, float specularIntensity, float specularPower, Texture* normalMap = new Texture("default_normal.jpg"))
 	{
 		AddTexture("diffuse", diffuse);
 		AddFloat("specularIntensity", specularIntensity);
 		AddFloat("specularPower", specularPower);
+		AddTexture("normalMap", normalMap);
 	}
 
 	virtual ~Material()
