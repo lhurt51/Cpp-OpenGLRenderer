@@ -19,7 +19,7 @@ TextureData::TextureData(GLenum textureTarget, int width, int height, int numTex
 TextureData::~TextureData()
 {
 	if (*m_textureID) glDeleteTextures(m_numTextures, m_textureID);
-	if (m_textureID) delete m_textureID;
+	if (m_textureID) delete[] m_textureID;
 }
 
 void TextureData::Bind(int textureNum)
