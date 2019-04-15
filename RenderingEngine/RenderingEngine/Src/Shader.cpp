@@ -252,8 +252,8 @@ void Shader::UpdateUniforms(const Transform & transform, const Material & materi
 
 			if (uniformType == "sampler2D")
 			{
-				int samplerSlot = renderingEngine->GetSamplerSlot(uniformName);
-				renderingEngine->GetTexture(uniformName)->Bind(samplerSlot);
+				int samplerSlot = renderingEngine->GetSamplerSlot(unprefixedName);
+				renderingEngine->GetTexture(unprefixedName)->Bind(samplerSlot);
 				SetUniformi(uniformName, samplerSlot);
 			}
 			else if (uniformType == "vec3")
