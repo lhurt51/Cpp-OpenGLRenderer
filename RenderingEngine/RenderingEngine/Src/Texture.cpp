@@ -5,7 +5,7 @@
 
 std::map<std::string, TextureData*> Texture::s_resourceMap;
 
-TextureData::TextureData(GLenum textureTarget, int width, int height, int numTextures, unsigned char** data, GLfloat* filters, GLenum* attachments)
+TextureData::TextureData(GLenum textureTarget, int width, int height, int numTextures, unsigned char** data, GLfloat* filters, GLenum* internalFormat, GLenum* format, bool clamp, GLenum* attachments)
 {
 	m_textureID = new GLuint[numTextures];
 	m_textureTarget = textureTarget;
@@ -15,7 +15,7 @@ TextureData::TextureData(GLenum textureTarget, int width, int height, int numTex
 	m_frameBuffer = 0;
 	m_renderBuffer = 0;
 
-	InitTextures(data, filters);
+	InitTextures(data, filters, internalFormat, format, clamp);
 	InitRenderTarget(attachments);
 }
 
@@ -35,19 +35,30 @@ void TextureData::Bind(int textureNum)
 void TextureData::BindAsRenderTarget()
 {
 	glBindTexture(GL_TEXTURE_2D, 0);
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_frameBuffer);
+	glBindFramebuffer(GL_FRAMEBUFFER, m_frameBuffer);
 	glViewport(0, 0, m_width, m_height);
 }
 
-void TextureData::InitTextures(unsigned char** data, GLfloat* filters)
+void TextureData::InitTextures(unsigned char** data, GLfloat* filters, GLenum* internalFormat, GLenum* format, bool clamp)
 {
 	glGenTextures(m_numTextures, m_textureID);
 	for (int i = 0; i < m_numTextures; i++)
 	{
 		glBindTexture(m_textureTarget, m_textureID[i]);
+
 		glTexParameterf(m_textureTarget, GL_TEXTURE_MIN_FILTER, filters[i]);
 		glTexParameterf(m_textureTarget, GL_TEXTURE_MAG_FILTER, filters[i]);
-		glTexImage2D(m_textureTarget, 0, GL_RGBA, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data[i]);
+
+		if (clamp)
+		{
+			glTexParameterf(m_textureTarget, GL_TEXTURE_WRAP_S, GL_CLAMP);
+			glTexParameterf(m_textureTarget, GL_TEXTURE_WRAP_T, GL_CLAMP);
+		}
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
+
+		glTexImage2D(m_textureTarget, 0, internalFormat[i], m_width, m_height, 0, format[i], GL_UNSIGNED_BYTE, data[i]);
 	}
 }
 
@@ -60,7 +71,6 @@ void TextureData::InitRenderTarget(GLenum* attachments)
 	assert(m_numTextures <= 32);
 
 	bool hasDepth = false;
-
 	for (int i = 0; i < m_numTextures; i++)
 	{
 		if (attachments[i] == GL_DEPTH_ATTACHMENT)
@@ -77,10 +87,10 @@ void TextureData::InitRenderTarget(GLenum* attachments)
 		if (m_frameBuffer == 0)
 		{
 			glGenFramebuffers(1, &m_frameBuffer);
-			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_frameBuffer);
+			glBindFramebuffer(GL_FRAMEBUFFER, m_frameBuffer);
 		}
 
-		glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, attachments[i], m_textureTarget, m_textureID[i], 0);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, attachments[i], m_textureTarget, m_textureID[i], 0);
 	}
 
 	if (m_frameBuffer == 0)
@@ -104,7 +114,7 @@ void TextureData::InitRenderTarget(GLenum* attachments)
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-Texture::Texture(const std::string & fileName, GLenum textureTarget, GLfloat filter, GLenum attachment)
+Texture::Texture(const std::string& fileName, GLenum textureTarget, GLfloat filter, GLenum internalFormat, GLenum format, bool clamp, GLenum attachment)
 {
 	m_fileName = fileName;
 
@@ -122,17 +132,17 @@ Texture::Texture(const std::string & fileName, GLenum textureTarget, GLfloat fil
 		if (data == NULL)
 			std::cerr << "Unable to load texture: " << fileName << std::endl;
 
-		m_textureData = new TextureData(textureTarget, x, y, 1, &data, &filter, &attachment);
+		m_textureData = new TextureData(textureTarget, x, y, 1, &data, &filter, &internalFormat, &format, clamp, &attachment);
 		stbi_image_free(data);
 
 		s_resourceMap.insert(std::pair<std::string, TextureData*>(fileName, m_textureData));
 	}
 }
 
-Texture::Texture(int width, int height, unsigned char * data, GLenum textureTarget, GLfloat filter, GLenum attachment)
+Texture::Texture(int width, int height, unsigned char* data, GLenum textureTarget, GLfloat filter, GLenum internalFormat, GLenum format, bool clamp, GLenum attachment)
 {
 	m_fileName = "";
-	m_textureData = new TextureData(textureTarget, width, height, 1, &data, &filter, &attachment);
+	m_textureData = new TextureData(textureTarget, width, height, 1, &data, &filter, &internalFormat, &format, clamp, &attachment);
 }
 
 Texture::~Texture()
