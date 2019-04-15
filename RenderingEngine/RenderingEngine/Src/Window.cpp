@@ -43,6 +43,7 @@ void Window::Dispose()
 
 void Window::BindAsRenderTarget()
 {
+	glBindTexture(GL_TEXTURE_2D, 0);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	glViewport(0,0,GetWidth(), GetHeight());
 }

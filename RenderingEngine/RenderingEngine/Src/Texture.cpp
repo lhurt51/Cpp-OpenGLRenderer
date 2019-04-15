@@ -5,26 +5,38 @@
 
 std::map<std::string, TextureData*> Texture::s_resourceMap;
 
-TextureData::TextureData(GLenum textureTarget, int width, int height, int numTextures, unsigned char** data, GLfloat* filters)
+TextureData::TextureData(GLenum textureTarget, int width, int height, int numTextures, unsigned char** data, GLfloat* filters, GLenum* attachments)
 {
 	m_textureID = new GLuint[numTextures];
 	m_textureTarget = textureTarget;
 	m_numTextures = numTextures;
 	m_width = width;
 	m_height = height;
+	m_frameBuffer = 0;
+	m_renderBuffer = 0;
 
 	InitTextures(data, filters);
+	InitRenderTarget(attachments);
 }
 
 TextureData::~TextureData()
 {
 	if (*m_textureID) glDeleteTextures(m_numTextures, m_textureID);
+	if (m_frameBuffer) glDeleteFramebuffers(1, &m_frameBuffer);
+	if (m_renderBuffer) glDeleteRenderbuffers(1, &m_renderBuffer);
 	if (m_textureID) delete[] m_textureID;
 }
 
 void TextureData::Bind(int textureNum)
 {
 	glBindTexture(m_textureTarget, m_textureID[textureNum]);
+}
+
+void TextureData::BindAsRenderTarget()
+{
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_frameBuffer);
+	glViewport(0, 0, m_width, m_height);
 }
 
 void TextureData::InitTextures(unsigned char** data, GLfloat* filters)
@@ -39,7 +51,60 @@ void TextureData::InitTextures(unsigned char** data, GLfloat* filters)
 	}
 }
 
-Texture::Texture(const std::string & fileName, GLenum textureTarget, GLfloat filter)
+void TextureData::InitRenderTarget(GLenum* attachments)
+{
+	if (attachments == 0)
+		return;
+
+	GLenum drawBuffers[32];
+	assert(m_numTextures <= 32);
+
+	bool hasDepth = false;
+
+	for (int i = 0; i < m_numTextures; i++)
+	{
+		if (attachments[i] == GL_DEPTH_ATTACHMENT)
+		{
+			drawBuffers[i] = GL_NONE;
+			hasDepth = true;
+		}
+		else
+			drawBuffers[i] = attachments[i];
+
+		if (attachments[i] == GL_NONE)
+			continue;
+
+		if (m_frameBuffer == 0)
+		{
+			glGenFramebuffers(1, &m_frameBuffer);
+			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_frameBuffer);
+		}
+
+		glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, attachments[i], m_textureTarget, m_textureID[i], 0);
+	}
+
+	if (m_frameBuffer == 0)
+		return;
+
+	if (!hasDepth)
+	{
+		glGenRenderbuffers(1, &m_renderBuffer);
+		glBindRenderbuffer(GL_RENDERBUFFER, m_renderBuffer);
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, m_width, m_height);
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_renderBuffer);
+	}
+
+	glDrawBuffers(m_numTextures, drawBuffers);
+
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+	{
+		std::cerr << "Framebuffer creation failed!" << std::endl;
+		assert(false);
+	}
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+Texture::Texture(const std::string & fileName, GLenum textureTarget, GLfloat filter, GLenum attachment)
 {
 	m_fileName = fileName;
 
@@ -57,17 +122,17 @@ Texture::Texture(const std::string & fileName, GLenum textureTarget, GLfloat fil
 		if (data == NULL)
 			std::cerr << "Unable to load texture: " << fileName << std::endl;
 
-		m_textureData = new TextureData(textureTarget, x, y, 1, &data, &filter);
+		m_textureData = new TextureData(textureTarget, x, y, 1, &data, &filter, &attachment);
 		stbi_image_free(data);
 
 		s_resourceMap.insert(std::pair<std::string, TextureData*>(fileName, m_textureData));
 	}
 }
 
-Texture::Texture(int width, int height, unsigned char * data, GLenum textureTarget, GLfloat filter)
+Texture::Texture(int width, int height, unsigned char * data, GLenum textureTarget, GLfloat filter, GLenum attachment)
 {
 	m_fileName = "";
-	m_textureData = new TextureData(textureTarget, width, height, 1, &data, &filter);
+	m_textureData = new TextureData(textureTarget, width, height, 1, &data, &filter, &attachment);
 }
 
 Texture::~Texture()
@@ -89,5 +154,5 @@ void Texture::Bind(unsigned int unit) const
 
 void Texture::BindAsRenderTarget()
 {
-
+	m_textureData->BindAsRenderTarget();
 }
