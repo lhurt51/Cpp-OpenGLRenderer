@@ -12,7 +12,7 @@ RenderingEngine::RenderingEngine()
 	m_samplerMap.insert(std::pair<std::string, unsigned int>("normalMap", 1));
 	m_samplerMap.insert(std::pair<std::string, unsigned int>("dispMap", 2));
 
-	SetVector3f("ambient", Vector3f(0.2f, 0.2f, 0.2f));
+	SetVector3f("ambient", Vector3f(0.3f, 0.3f, 0.3f));
 	m_defaultShader = new Shader("forward-ambient");
 
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -37,7 +37,7 @@ RenderingEngine::RenderingEngine()
 	m_planeTransform.SetScale(1.0f);
 	m_planeTransform.Rotate(Quaternion(Vector3f(1, 0, 0), ToRadians(90.0f)));
 
-	m_planeTransform.Rotate(Quaternion(Vector3f(1, 0, 0), ToRadians(180.0f)));
+	m_planeTransform.Rotate(Quaternion(Vector3f(0, 0, 1), ToRadians(180.0f)));
 	m_plane = new Mesh("./Res/models/plane.obj");
 }
 
@@ -51,8 +51,8 @@ RenderingEngine::~RenderingEngine()
 
 void	RenderingEngine::Render(GameObject* object)
 {
-	Window::BindAsRenderTarget();
-	// m_tempTarget->BindAsRenderTarget();
+	// Window::BindAsRenderTarget();
+	m_tempTarget->BindAsRenderTarget();
 
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -74,14 +74,16 @@ void	RenderingEngine::Render(GameObject* object)
 	glDisable(GL_BLEND);
 
 	// Temp Render
-	// Camera* temp = m_mainCamera;
-	// m_mainCamera = m_altCamera;
+	Window::BindAsRenderTarget();
 
-	// glClearColor(0.0f, 0.0f, 0.5f, 1.0f);
-	// glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	// m_defaultShader->Bind();
-	// m_defaultShader->UpdateUniforms(m_planeTransform, *m_planeMaterial, this);
-	// m_plane->Draw();
+	Camera* temp = m_mainCamera;
+	m_mainCamera = m_altCamera;
 
-	// m_mainCamera = temp;
+	glClearColor(0.0f, 0.0f, 0.5f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	m_defaultShader->Bind();
+	m_defaultShader->UpdateUniforms(m_planeTransform, *m_planeMaterial, this);
+	m_plane->Draw();
+
+	m_mainCamera = temp;
 }

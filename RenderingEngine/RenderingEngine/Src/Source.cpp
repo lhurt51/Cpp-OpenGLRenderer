@@ -50,8 +50,8 @@ void TestGame::Init()
 	testMesh1->AddChild(testMesh2);
 
 	AddToScene(planeObject);
-	AddToScene(pointLightObject);
-	AddToScene(spotLightObject);
+	// AddToScene(pointLightObject);
+	// AddToScene(spotLightObject);
 	AddToScene(directionalLightObject);
 	AddToScene(testMesh1);
 	testMesh2->AddChild((new GameObject())->AddComponent(new Camera(Matrix4f().InitPerspective(ToRadians(70.0f), Window::GetAspect(), 0.1f, 1000.0f)))->AddComponent(new FreeLook())->AddComponent(new FreeMove()));

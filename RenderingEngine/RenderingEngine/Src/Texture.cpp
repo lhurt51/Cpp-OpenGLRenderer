@@ -60,6 +60,7 @@ void TextureData::InitTextures(unsigned char** data, GLfloat* filters, GLenum* i
 
 		glTexImage2D(m_textureTarget, 0, internalFormat[i], m_width, m_height, 0, format[i], GL_UNSIGNED_BYTE, data[i]);
 	}
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void TextureData::InitRenderTarget(GLenum* attachments)
