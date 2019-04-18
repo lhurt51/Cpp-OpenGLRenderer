@@ -79,6 +79,7 @@ void	RenderingEngine::Render(GameObject* object)
 
 			m_lightMatrix = s_biasMatrix * m_altCamera->GetViewProjection();
 
+			SetVector3f("shadowTexelSize", Vector3f(1.0f / 1024.0f, 1.0f / 1024.0f, 0.0f));
 			SetFloat("shadowBias", shadowInfo->GetBias() / 1024.0f);
 			bool flipFaces = shadowInfo->GetFlipFaces();
 

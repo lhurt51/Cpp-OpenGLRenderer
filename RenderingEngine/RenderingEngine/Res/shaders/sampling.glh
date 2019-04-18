@@ -7,3 +7,8 @@ float SampleShadowMap(sampler2D shadowMap, vec2 coords, float compare)
 {
 	return step(compare, texture2D(shadowMap, coords.xy).r);
 }
+
+float SampleShadowMapLinear(sampler2D shadowMap, vec2 coords, float compare)
+{
+	return step(compare, texture2D(shadowMap, coords.xy).r);
+}
