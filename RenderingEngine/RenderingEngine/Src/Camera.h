@@ -13,6 +13,8 @@ public:
 	Camera(const Matrix4f& projection);
 
 	Matrix4f GetViewProjection() const;
+
+	inline void SetProjection(const Matrix4f& projection) { m_projection = projection; }
 	virtual void AddToEngine(CoreEngine* engine);
 
 };

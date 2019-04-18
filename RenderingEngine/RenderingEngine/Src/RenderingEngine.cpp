@@ -6,15 +6,20 @@
 #include "Mesh.h"
 #include <cstring>
 
+const Matrix4f RenderingEngine::s_biasMatrix = Matrix4f().InitScale(Vector3f(0.5, 0.5, 0.5)) * Matrix4f().InitTranslation(Vector3f(1.0, 1.0, 1.0));
+
 RenderingEngine::RenderingEngine()
 {
 	// Shader initialization
 	m_samplerMap.insert(std::pair<std::string, unsigned int>("diffuse", 0));
 	m_samplerMap.insert(std::pair<std::string, unsigned int>("normalMap", 1));
 	m_samplerMap.insert(std::pair<std::string, unsigned int>("dispMap", 2));
+	m_samplerMap.insert(std::pair<std::string, unsigned int>("shadowMap", 3));
 
 	SetVector3f("ambient", Vector3f(0.2f, 0.2f, 0.2f));
+	SetTexture("shadowMap", new Texture(1024, 1024, 0, GL_TEXTURE_2D, GL_NEAREST, GL_DEPTH_COMPONENT16, GL_DEPTH_COMPONENT, true, GL_DEPTH_ATTACHMENT));
 	m_defaultShader = new Shader("forward-ambient");
+	m_shadowMapShader = new Shader("shadowMapGenerator");
 
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
@@ -58,20 +63,48 @@ void	RenderingEngine::Render(GameObject* object)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	object->RenderAll(m_defaultShader, this);
 
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_ONE, GL_ONE);
-	glDepthMask(GL_FALSE);
-	glDepthFunc(GL_EQUAL);
-
 	for (unsigned int i = 0; i < m_lights.size(); i++)
 	{
 		m_activeLight = m_lights[i];
-		object->RenderAll(m_activeLight->GetShader(), this);
-	}
+		ShadowInfo* shadowInfo = m_activeLight->GetShadowInfo();
 
-	glDepthMask(GL_TRUE);
-	glDepthFunc(GL_LESS);
-	glDisable(GL_BLEND);
+		GetTexture("shadowMap")->BindAsRenderTarget();
+		glClear(GL_DEPTH_BUFFER_BIT);
+
+		if (shadowInfo)
+		{
+			m_altCamera->SetProjection(shadowInfo->GetProjection());
+			m_altCamera->GetTransform().SetPos(m_activeLight->GetTransform().GetTransformedPos());
+			m_altCamera->GetTransform().SetRot(m_activeLight->GetTransform().GetTransformedRot());
+
+			m_lightMatrix = s_biasMatrix * m_altCamera->GetViewProjection();
+
+			SetFloat("shadowBias", shadowInfo->GetBias() / 1024.0f);
+			bool flipFaces = shadowInfo->GetFlipFaces();
+
+			Camera* temp = m_mainCamera;
+			m_mainCamera = m_altCamera;
+
+			if (flipFaces) glCullFace(GL_FRONT);
+			object->RenderAll(m_shadowMapShader, this);
+			if (flipFaces) glCullFace(GL_BACK);
+
+			m_mainCamera = temp;
+		}
+
+		Window::BindAsRenderTarget();
+
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_ONE, GL_ONE);
+		glDepthMask(GL_FALSE);
+		glDepthFunc(GL_EQUAL);
+
+		object->RenderAll(m_activeLight->GetShader(), this);
+
+		glDepthMask(GL_TRUE);
+		glDepthFunc(GL_LESS);
+		glDisable(GL_BLEND);
+	}
 
 	// Render To Texture
 	/*

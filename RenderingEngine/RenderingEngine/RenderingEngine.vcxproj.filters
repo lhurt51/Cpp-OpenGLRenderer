@@ -191,5 +191,7 @@
     <None Include="Res\shaders\lighting.fsh" />
     <None Include="Res\shaders\lightingMain.fsh" />
     <None Include="Res\shaders\sampling.glh" />
+    <None Include="Res\shaders\shadowMapGenerator.fs" />
+    <None Include="Res\shaders\shadowMapGenerator.vs" />
   </ItemGroup>
 </Project>
