@@ -34,6 +34,7 @@ void TextureData::Bind(int textureNum)
 
 void TextureData::BindAsRenderTarget()
 {
+	glBindTexture(GL_TEXTURE_2D, 0);
 	glBindFramebuffer(GL_FRAMEBUFFER, m_frameBuffer);
 	glViewport(0, 0, m_width, m_height);
 }
@@ -105,11 +106,15 @@ void TextureData::InitRenderTarget(GLenum* attachments)
 
 	glDrawBuffers(m_numTextures, drawBuffers);
 
+	//glDrawBuffer(GL_NONE);
+	//glReadBuffer(GL_NONE);
+
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 	{
 		std::cerr << "Framebuffer creation failed!" << std::endl;
 		assert(false);
 	}
+	glBindTexture(GL_FRAMEBUFFER, 0);
 }
 
 Texture::Texture(const std::string& fileName, GLenum textureTarget, GLfloat filter, GLenum internalFormat, GLenum format, bool clamp, GLenum attachment)

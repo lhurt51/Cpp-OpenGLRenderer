@@ -17,7 +17,7 @@ public:
 	ShadowInfo(const Matrix4f& projection, float bias, bool flipFaces) : m_projection(projection), m_bias(bias), m_flipFaces(flipFaces)
 	{}
 
-	inline Matrix4f GetProjection() const { return m_projection; }
+	inline const Matrix4f& GetProjection() const { return m_projection; }
 	inline float GetBias() const { return m_bias; }
 	inline bool GetFlipFaces() const { return m_flipFaces; }
 

@@ -6,7 +6,7 @@ float CalcShadowAmount(sampler2D shadowMap, vec4 initShadowMapCoords)
 	vec3 shadowMapCoords = (initShadowMapCoords.xyz / initShadowMapCoords.w);
 
 	// How far nearest object is from the light
-	return SampleShadowMap(shadowMap, shadowMapCoords.xy, shadowMapCoords.z - R_shadowBias);
+	return SampleShadowMapPCF(shadowMap, shadowMapCoords.xy, shadowMapCoords.z - R_shadowBias, R_shadowTexelSize.xy);
 }
 
 void main ()
