@@ -34,7 +34,6 @@ void TextureData::Bind(int textureNum)
 
 void TextureData::BindAsRenderTarget()
 {
-	glBindTexture(GL_TEXTURE_2D, 0);
 	glBindFramebuffer(GL_FRAMEBUFFER, m_frameBuffer);
 	glViewport(0, 0, m_width, m_height);
 }
@@ -60,7 +59,6 @@ void TextureData::InitTextures(unsigned char** data, GLfloat* filters, GLenum* i
 
 		glTexImage2D(m_textureTarget, 0, internalFormat[i], m_width, m_height, 0, format[i], GL_UNSIGNED_BYTE, data[i]);
 	}
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void TextureData::InitRenderTarget(GLenum* attachments)
@@ -112,7 +110,6 @@ void TextureData::InitRenderTarget(GLenum* attachments)
 		std::cerr << "Framebuffer creation failed!" << std::endl;
 		assert(false);
 	}
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 Texture::Texture(const std::string& fileName, GLenum textureTarget, GLfloat filter, GLenum internalFormat, GLenum format, bool clamp, GLenum attachment)

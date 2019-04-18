@@ -39,7 +39,7 @@ void TestGame::Init()
 	GameObject* testMesh2 = new GameObject();
 
 	testMesh1->AddComponent(new MeshRenderer(new Mesh("./Res/models/plane3.obj"), new Material(new Texture("bricks2.jpg"), 1, 8, new Texture("bricks2_normal.png"), new Texture("bricks2_disp.jpg"), 0.04f, -1.0)));
-	testMesh2->AddComponent(new MeshRenderer(new Mesh("./Res/models/plane3.obj"), new Material(new Texture("bricks2.jpg"), 1, 8, new Texture("bricks2_normal.png"))));
+	testMesh2->AddComponent(new MeshRenderer(new Mesh("./Res/models/plane3.obj"), new Material(new Texture("bricks2.jpg"), 1, 8, new Texture("bricks2_normal.png"), new Texture("bricks2_disp.jpg"), 0.04f, -1.0)));
 
 	testMesh1->GetTransform().SetPos(Vector3f(0, 2, 0));
 	testMesh1->GetTransform().SetRot(Quaternion(Vector3f(0, 1, 0), 0.4f));
@@ -50,8 +50,8 @@ void TestGame::Init()
 	testMesh1->AddChild(testMesh2);
 
 	AddToScene(planeObject);
-	// AddToScene(pointLightObject);
-	// AddToScene(spotLightObject);
+	AddToScene(pointLightObject);
+	AddToScene(spotLightObject);
 	AddToScene(directionalLightObject);
 	AddToScene(testMesh1);
 	testMesh2->AddChild((new GameObject())->AddComponent(new Camera(Matrix4f().InitPerspective(ToRadians(70.0f), Window::GetAspect(), 0.1f, 1000.0f)))->AddComponent(new FreeLook())->AddComponent(new FreeMove()));

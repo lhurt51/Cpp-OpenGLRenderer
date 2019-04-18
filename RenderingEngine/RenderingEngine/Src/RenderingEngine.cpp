@@ -8,11 +8,12 @@
 
 RenderingEngine::RenderingEngine()
 {
+	// Shader initialization
 	m_samplerMap.insert(std::pair<std::string, unsigned int>("diffuse", 0));
 	m_samplerMap.insert(std::pair<std::string, unsigned int>("normalMap", 1));
 	m_samplerMap.insert(std::pair<std::string, unsigned int>("dispMap", 2));
 
-	SetVector3f("ambient", Vector3f(0.3f, 0.3f, 0.3f));
+	SetVector3f("ambient", Vector3f(0.2f, 0.2f, 0.2f));
 	m_defaultShader = new Shader("forward-ambient");
 
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -23,12 +24,12 @@ RenderingEngine::RenderingEngine()
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_DEPTH_CLAMP);
 
+	// Render To Texture Init
 	m_altCamera = new Camera(Matrix4f().InitIdentity());
 	m_altCameraObject = (new GameObject())->AddComponent(m_altCamera);
 	m_altCamera->GetTransform().Rotate(Vector3f(0, 1, 0), ToRadians(180.0f));
 
 	int width = Window::GetWidth();
-	// This was broken previously... Explains a lot
 	int height = Window::GetHeight();
 
 	m_tempTarget = new Texture(width, height, 0, GL_TEXTURE_2D, GL_NEAREST, GL_RGBA, GL_RGBA, false, GL_COLOR_ATTACHMENT0);
@@ -36,7 +37,6 @@ RenderingEngine::RenderingEngine()
 	m_planeMaterial = new Material(m_tempTarget, 1, 8);
 	m_planeTransform.SetScale(1.0f);
 	m_planeTransform.Rotate(Quaternion(Vector3f(1, 0, 0), ToRadians(90.0f)));
-
 	m_planeTransform.Rotate(Quaternion(Vector3f(0, 0, 1), ToRadians(180.0f)));
 	m_plane = new Mesh("./Res/models/plane.obj");
 }
@@ -51,8 +51,8 @@ RenderingEngine::~RenderingEngine()
 
 void	RenderingEngine::Render(GameObject* object)
 {
-	// Window::BindAsRenderTarget();
-	m_tempTarget->BindAsRenderTarget();
+	Window::BindAsRenderTarget();
+	//m_tempTarget->BindAsRenderTarget();
 
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -73,7 +73,8 @@ void	RenderingEngine::Render(GameObject* object)
 	glDepthFunc(GL_LESS);
 	glDisable(GL_BLEND);
 
-	// Temp Render
+	// Render To Texture
+	/*
 	Window::BindAsRenderTarget();
 
 	Camera* temp = m_mainCamera;
@@ -86,4 +87,5 @@ void	RenderingEngine::Render(GameObject* object)
 	m_plane->Draw();
 
 	m_mainCamera = temp;
+	*/
 }
