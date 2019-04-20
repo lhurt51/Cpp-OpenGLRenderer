@@ -21,6 +21,9 @@ public:
 	TextureData(GLenum textureTarget, int width, int height, int numTextures, unsigned char** data, GLfloat* filters, GLenum* internalFormat, GLenum* format, bool clamp, GLenum* attachments);
 	virtual ~TextureData();
 
+	inline int GetWidth() const { return m_width; }
+	inline int GetHeight() const { return m_height; }
+
 	void Bind(int textureNum);
 	void BindAsRenderTarget();
 
@@ -43,6 +46,9 @@ public:
 	Texture(const std::string& fileName, GLenum textureTarget = GL_TEXTURE_2D, GLfloat filter = GL_LINEAR, GLenum internalFormat = GL_RGBA, GLenum format = GL_RGBA, bool clamp = false, GLenum attachment = GL_NONE);
 	Texture(int width = 0, int height = 0, unsigned char* data = 0, GLenum textureTarget = GL_TEXTURE_2D, GLfloat filter = GL_LINEAR, GLenum internalFormat = GL_RGBA, GLenum format = GL_RGBA, bool clamp = false, GLenum attachment = GL_NONE);
 	virtual ~Texture();
+
+	inline int GetWidth() const { return m_textureData->GetWidth(); }
+	inline int GetHeight() const { return m_textureData->GetHeight(); }
 
 	void Bind(unsigned int unit = 0) const;
 	void BindAsRenderTarget();

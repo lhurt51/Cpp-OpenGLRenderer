@@ -28,6 +28,8 @@ class RenderingEngine : public MappedValues
 	BaseLight* m_activeLight;
 	Shader* m_defaultShader;
 	Shader* m_shadowMapShader;
+	Shader* m_nullFilter;
+	Shader* m_gausBlurFilter;
 	Matrix4f m_lightMatrix;
 	std::vector<BaseLight*> m_lights;
 	std::map<std::string, unsigned int> m_samplerMap;
@@ -54,6 +56,11 @@ public:
 	{
 		throw uniformType + " is not supported by the rendering engine";
 	}
+
+private:
+
+	void BlurShadowMap(Texture* shadowMap, float blurAmount);
+	void ApplyFilter(Shader* filter, Texture* source, Texture* dest);
 
 };
 

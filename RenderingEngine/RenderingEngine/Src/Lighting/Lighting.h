@@ -9,17 +9,26 @@ class ShadowInfo
 {
 
 	Matrix4f m_projection;
-	float m_bias;
 	bool m_flipFaces;
+	float m_shadowSoftness;
+	float m_lightBleedReduction;
+	float m_varianceMin;
 
 public:
 
-	ShadowInfo(const Matrix4f& projection, float bias, bool flipFaces) : m_projection(projection), m_bias(bias), m_flipFaces(flipFaces)
+	ShadowInfo(const Matrix4f& projection, bool flipFaces, float shadowSoftness = 1.0f, float lightBleedReduction = 0.2f, float minVariance = 0.00002f) :
+		m_projection(projection),
+		m_flipFaces(flipFaces),
+		m_shadowSoftness(shadowSoftness),
+		m_lightBleedReduction(lightBleedReduction),
+		m_varianceMin(minVariance)
 	{}
 
 	inline const Matrix4f& GetProjection() const { return m_projection; }
-	inline float GetBias() const { return m_bias; }
 	inline bool GetFlipFaces() const { return m_flipFaces; }
+	inline float GetShadowSoftness() const { return m_shadowSoftness; }
+	inline float GetLightBleedReduction() const { return m_lightBleedReduction; }
+	inline float GetMinVariance() const { return m_varianceMin; }
 
 };
 
