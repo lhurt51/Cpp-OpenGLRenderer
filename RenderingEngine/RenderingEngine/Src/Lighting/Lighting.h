@@ -86,5 +86,5 @@ struct SpotLight : public PointLight
 {
 	float cutoff;
 
-	SpotLight(const Vector3f& color = Vector3f(0, 0, 0), float intensity = 0, const Attenuation& atten = Attenuation(), float cutoff = 0);
+	SpotLight(const Vector3f& color = Vector3f(0, 0, 0), float intensity = 0, const Attenuation& atten = Attenuation(), float viewAngle = ToRadians(179.0f), int shadowMapSizeAsPowerOf2 = 0, float shadowSoftness = 1.0f, float lightBleedReduction = 0.2f, float minVariance = 0.00002f);
 };

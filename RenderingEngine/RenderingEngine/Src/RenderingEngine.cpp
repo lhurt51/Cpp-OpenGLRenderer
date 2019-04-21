@@ -76,7 +76,8 @@ void	RenderingEngine::Render(GameObject* object)
 		ShadowInfo* shadowInfo = m_activeLight->GetShadowInfo();
 
 		GetTexture("shadowMap")->BindAsRenderTarget();
-		glClear(GL_DEPTH_BUFFER_BIT);
+		glClearColor(0.0f, 1.0f, 0.0f, 0.0f);
+		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
 		if (shadowInfo)
 		{
@@ -98,7 +99,16 @@ void	RenderingEngine::Render(GameObject* object)
 			if (flipFaces) glCullFace(GL_BACK);
 
 			m_mainCamera = temp;
-			BlurShadowMap(GetTexture("shadowMap"), shadowInfo->GetShadowSoftness());
+
+			float shadowSoftness = shadowInfo->GetShadowSoftness();
+			if (shadowSoftness != 0)
+				BlurShadowMap(GetTexture("shadowMap"), shadowSoftness);
+		}
+		else
+		{
+			m_lightMatrix = Matrix4f().InitScale(Vector3f(Vector3f(0, 0, 0)));
+			SetFloat("shadowVarianceMin", 0.00002f);
+			SetFloat("shadowLightBleedReduction", 0.0f);
 		}
 
 		Window::BindAsRenderTarget();
@@ -118,10 +128,10 @@ void	RenderingEngine::Render(GameObject* object)
 
 void RenderingEngine::BlurShadowMap(Texture * shadowMap, float blurAmount)
 {
-	SetVector3f("blurScale", Vector3f(1.0 / (shadowMap->GetWidth() * blurAmount), 0.0f, 0.0f));
+	SetVector3f("blurScale", Vector3f(blurAmount / shadowMap->GetWidth(), 0.0f, 0.0f));
 	ApplyFilter(m_gausBlurFilter, shadowMap, GetTexture("shadowMapTempTarget"));
 
-	SetVector3f("blurScale", Vector3f(0.0f, 1.0 / (shadowMap->GetHeight() * blurAmount), 0.0f));
+	SetVector3f("blurScale", Vector3f(0.0f, blurAmount / shadowMap->GetHeight(), 0.0f));
 	ApplyFilter(m_gausBlurFilter, GetTexture("shadowMapTempTarget"), shadowMap);
 }
 

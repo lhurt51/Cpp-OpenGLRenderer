@@ -35,6 +35,7 @@ class RenderingEngine : public MappedValues
 	std::map<std::string, unsigned int> m_samplerMap;
 
 	static const Matrix4f s_biasMatrix;
+	static const int s_numShadowMaps = 10;
 
 public:
 

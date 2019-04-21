@@ -2,6 +2,7 @@
 #include "../RenderingEngine.h"
 #include "../Shader.h"
 #include "../CoreEngine.h"
+#include <iostream>
 
 #define COLOR_DEPTH 256
 
@@ -45,7 +46,12 @@ PointLight::PointLight(const Vector3f& color, float intensity, const Attenuation
 	SetShader(new Shader("forward-point"));
 }
 
-SpotLight::SpotLight(const Vector3f & color, float intensity, const Attenuation & atten, float cutoff) : PointLight(color, intensity, atten), cutoff(cutoff)
+SpotLight::SpotLight(const Vector3f& color, float intensity, const Attenuation& atten, float viewAngle, int shadowMapSizeAsPowerOf2, float shadowSoftness, float lightBleedReduction, float minVariance) : PointLight(color, intensity, atten), cutoff(cos(viewAngle/2))
 {
 	SetShader(new Shader("forward-spot"));
+
+	if (shadowMapSizeAsPowerOf2 != 0)
+	{
+		SetShadowInfo(new ShadowInfo(Matrix4f().InitPerspective(viewAngle, 1.0, 0.1, this->range), false, shadowSoftness, lightBleedReduction, minVariance));
+	}
 }
