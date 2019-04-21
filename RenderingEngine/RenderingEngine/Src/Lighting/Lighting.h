@@ -10,15 +10,17 @@ class ShadowInfo
 
 	Matrix4f m_projection;
 	bool m_flipFaces;
+	int m_shadowMapSizeAsPowerOf2;
 	float m_shadowSoftness;
 	float m_lightBleedReduction;
 	float m_varianceMin;
 
 public:
 
-	ShadowInfo(const Matrix4f& projection, bool flipFaces, float shadowSoftness = 1.0f, float lightBleedReduction = 0.2f, float minVariance = 0.00002f) :
+	ShadowInfo(const Matrix4f& projection, bool flipFaces, int shadowMapSizeAsPowerOf2, float shadowSoftness = 1.0f, float lightBleedReduction = 0.2f, float minVariance = 0.00002f) :
 		m_projection(projection),
 		m_flipFaces(flipFaces),
+		m_shadowMapSizeAsPowerOf2(shadowMapSizeAsPowerOf2),
 		m_shadowSoftness(shadowSoftness),
 		m_lightBleedReduction(lightBleedReduction),
 		m_varianceMin(minVariance)
@@ -26,6 +28,7 @@ public:
 
 	inline const Matrix4f& GetProjection() const { return m_projection; }
 	inline bool GetFlipFaces() const { return m_flipFaces; }
+	inline int GetShadowMapSizeAsPowerOf2() const { return m_shadowMapSizeAsPowerOf2; }
 	inline float GetShadowSoftness() const { return m_shadowSoftness; }
 	inline float GetLightBleedReduction() const { return m_lightBleedReduction; }
 	inline float GetMinVariance() const { return m_varianceMin; }
@@ -86,5 +89,5 @@ struct SpotLight : public PointLight
 {
 	float cutoff;
 
-	SpotLight(const Vector3f& color = Vector3f(0, 0, 0), float intensity = 0, const Attenuation& atten = Attenuation(), float viewAngle = ToRadians(179.0f), int shadowMapSizeAsPowerOf2 = 0, float shadowSoftness = 1.0f, float lightBleedReduction = 0.2f, float minVariance = 0.00002f);
+	SpotLight(const Vector3f& color = Vector3f(0, 0, 0), float intensity = 0, const Attenuation& atten = Attenuation(), float viewAngle = ToRadians(170.0f), int shadowMapSizeAsPowerOf2 = 0, float shadowSoftness = 1.0f, float lightBleedReduction = 0.2f, float minVariance = 0.00002f);
 };

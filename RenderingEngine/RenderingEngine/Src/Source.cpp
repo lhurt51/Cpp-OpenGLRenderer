@@ -30,7 +30,7 @@ void TestGame::Init()
 	pointLightObject->AddComponent(new PointLight(Vector3f(0, 1, 0), 0.4f, Attenuation(0, 0, 1)));
 	pointLightObject->GetTransform().SetPos(Vector3f(7, 0, 7));
 
-	spotLightObject->AddComponent(new SpotLight(Vector3f(0, 1, 1), 0.4f, Attenuation(0, 0, 0.02f), ToRadians(91.1f), 10));
+	spotLightObject->AddComponent(new SpotLight(Vector3f(0, 1, 1), 0.4f, Attenuation(0, 0, 0.02f), ToRadians(91.1f), 7, 0.0f));
 	spotLightObject->GetTransform().Rotate(Quaternion(Vector3f(0, 1, 0), ToRadians(90.0f)));
 	spotLightObject->GetTransform().Rotate(Quaternion(Vector3f(1, 0, 0), ToRadians(-60.0f)));
 	spotLightObject->GetTransform().SetPos(Vector3f(10, 1.0f, 5));

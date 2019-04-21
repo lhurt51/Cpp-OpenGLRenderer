@@ -18,8 +18,8 @@ RenderingEngine::RenderingEngine()
 	m_samplerMap.insert(std::pair<std::string, unsigned int>("shadowMap", 3));
 
 	SetVector3f("ambient", Vector3f(0.2f, 0.2f, 0.2f));
-	SetTexture("shadowMap", new Texture(1024, 1024, 0, GL_TEXTURE_2D, GL_LINEAR, GL_RG32F, GL_RGBA, true, GL_COLOR_ATTACHMENT0));
-	SetTexture("shadowMapTempTarget", new Texture(1024, 1024, 0, GL_TEXTURE_2D, GL_LINEAR, GL_RG32F, GL_RGBA, true, GL_COLOR_ATTACHMENT0));
+	//SetTexture("shadowMap", new Texture(1024, 1024, 0, GL_TEXTURE_2D, GL_LINEAR, GL_RG32F, GL_RGBA, true, GL_COLOR_ATTACHMENT0));
+	//SetTexture("shadowMapTempTarget", new Texture(1024, 1024, 0, GL_TEXTURE_2D, GL_LINEAR, GL_RG32F, GL_RGBA, true, GL_COLOR_ATTACHMENT0));
 	m_defaultShader = new Shader("forward-ambient");
 	m_shadowMapShader = new Shader("shadowMapGenerator");
 	m_nullFilter = new Shader("filter-null");
@@ -48,10 +48,19 @@ RenderingEngine::RenderingEngine()
 	m_planeTransform.Rotate(Quaternion(Vector3f(1, 0, 0), ToRadians(90.0f)));
 	m_planeTransform.Rotate(Quaternion(Vector3f(0, 0, 1), ToRadians(180.0f)));
 	m_plane = new Mesh("./Res/models/plane.obj");
+
+	for (int i = 0; i < s_numShadowMaps; i++)
+	{
+		int shadowMapSize = 1 << (i + 1);
+		m_shadowMaps[i] = new Texture(shadowMapSize, shadowMapSize, 0, GL_TEXTURE_2D, GL_LINEAR, GL_RG32F, GL_RGBA, true, GL_COLOR_ATTACHMENT0);
+		m_shadowTempTargets[i] = new Texture(shadowMapSize, shadowMapSize, 0, GL_TEXTURE_2D, GL_LINEAR, GL_RG32F, GL_RGBA, true, GL_COLOR_ATTACHMENT0);
+	}
 }
 
 RenderingEngine::~RenderingEngine()
 {
+	SetTexture("shadowMap", 0);
+
 	if (m_defaultShader) delete m_defaultShader;
 	if (m_shadowMapShader) delete m_shadowMapShader;
 	if (m_nullFilter) delete m_nullFilter;
@@ -59,12 +68,17 @@ RenderingEngine::~RenderingEngine()
 	if (m_altCameraObject) delete m_altCameraObject;
 	if (m_planeMaterial) delete m_planeMaterial;
 	if (m_plane) delete m_plane;
+
+	for (int i = 0; i < s_numShadowMaps; i++)
+	{
+		if (m_shadowMaps[i]) delete m_shadowMaps[i];
+		if (m_shadowTempTargets[i]) delete m_shadowTempTargets[i];
+	}
 }
 
 void	RenderingEngine::Render(GameObject* object)
 {
 	Window::BindAsRenderTarget();
-	//m_tempTarget->BindAsRenderTarget();
 
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -75,12 +89,21 @@ void	RenderingEngine::Render(GameObject* object)
 		m_activeLight = m_lights[i];
 		ShadowInfo* shadowInfo = m_activeLight->GetShadowInfo();
 
+		/*
 		GetTexture("shadowMap")->BindAsRenderTarget();
 		glClearColor(0.0f, 1.0f, 0.0f, 0.0f);
 		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+		*/
 
 		if (shadowInfo)
 		{
+			int shadowMapIndex = shadowInfo->GetShadowMapSizeAsPowerOf2() - 1;
+
+			SetTexture("shadowMap", m_shadowMaps[shadowMapIndex]);
+			m_shadowMaps[shadowMapIndex]->BindAsRenderTarget();
+			glClearColor(0.0f, 1.0f, 0.0f, 0.0f);
+			glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+
 			m_altCamera->SetProjection(shadowInfo->GetProjection());
 			m_altCamera->GetTransform().SetPos(m_activeLight->GetTransform().GetTransformedPos());
 			m_altCamera->GetTransform().SetRot(m_activeLight->GetTransform().GetTransformedRot());
@@ -102,10 +125,14 @@ void	RenderingEngine::Render(GameObject* object)
 
 			float shadowSoftness = shadowInfo->GetShadowSoftness();
 			if (shadowSoftness != 0)
-				BlurShadowMap(GetTexture("shadowMap"), shadowSoftness);
+				BlurShadowMap(shadowMapIndex, shadowSoftness);
 		}
 		else
 		{
+			SetTexture("shadowMap", m_shadowMaps[0]);
+			m_shadowMaps[0]->BindAsRenderTarget();
+			glClearColor(0.0f, 1.0f, 0.0f, 0.0f);
+			glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 			m_lightMatrix = Matrix4f().InitScale(Vector3f(Vector3f(0, 0, 0)));
 			SetFloat("shadowVarianceMin", 0.00002f);
 			SetFloat("shadowLightBleedReduction", 0.0f);
@@ -126,13 +153,16 @@ void	RenderingEngine::Render(GameObject* object)
 	}
 }
 
-void RenderingEngine::BlurShadowMap(Texture * shadowMap, float blurAmount)
+void RenderingEngine::BlurShadowMap(int shadowMapIndex, float blurAmount)
 {
+	Texture* shadowMap = m_shadowMaps[shadowMapIndex];
+	Texture* tempTarget = m_shadowTempTargets[shadowMapIndex];
+
 	SetVector3f("blurScale", Vector3f(blurAmount / shadowMap->GetWidth(), 0.0f, 0.0f));
-	ApplyFilter(m_gausBlurFilter, shadowMap, GetTexture("shadowMapTempTarget"));
+	ApplyFilter(m_gausBlurFilter, shadowMap, tempTarget);
 
 	SetVector3f("blurScale", Vector3f(0.0f, blurAmount / shadowMap->GetHeight(), 0.0f));
-	ApplyFilter(m_gausBlurFilter, GetTexture("shadowMapTempTarget"), shadowMap);
+	ApplyFilter(m_gausBlurFilter, tempTarget, shadowMap);
 }
 
 void RenderingEngine::ApplyFilter(Shader * filter, Texture * source, Texture * dest)

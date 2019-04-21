@@ -32,7 +32,7 @@ void BaseLight::SetShadowInfo(ShadowInfo* shadowInfo)
 DirectionalLight::DirectionalLight(const Vector3f& color, float intensity) : BaseLight(color, intensity)
 {
 	SetShader(new Shader("forward-directional"));
-	SetShadowInfo(new ShadowInfo(Matrix4f().InitOrthographic(-40, 40, -40, 40, -40, 40), true));
+	SetShadowInfo(new ShadowInfo(Matrix4f().InitOrthographic(-40, 40, -40, 40, -40, 40), true, 10));
 }
 
 PointLight::PointLight(const Vector3f& color, float intensity, const Attenuation & atten) : BaseLight(color, intensity), atten(atten)
@@ -52,6 +52,6 @@ SpotLight::SpotLight(const Vector3f& color, float intensity, const Attenuation& 
 
 	if (shadowMapSizeAsPowerOf2 != 0)
 	{
-		SetShadowInfo(new ShadowInfo(Matrix4f().InitPerspective(viewAngle, 1.0, 0.1, this->range), false, shadowSoftness, lightBleedReduction, minVariance));
+		SetShadowInfo(new ShadowInfo(Matrix4f().InitPerspective(viewAngle, 1.0, 0.1, this->range), false, shadowMapSizeAsPowerOf2, shadowSoftness, lightBleedReduction, minVariance));
 	}
 }

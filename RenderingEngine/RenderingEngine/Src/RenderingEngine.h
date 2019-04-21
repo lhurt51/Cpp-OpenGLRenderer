@@ -16,6 +16,9 @@ class Mesh;
 class RenderingEngine : public MappedValues
 {
 
+	static const Matrix4f s_biasMatrix;
+	static const int s_numShadowMaps = 10;
+
 	Camera* m_mainCamera;
 	Camera* m_altCamera;
 	GameObject* m_altCameraObject;
@@ -25,6 +28,9 @@ class RenderingEngine : public MappedValues
 	Mesh* m_plane;
 	Texture* m_tempTarget;
 
+	Texture* m_shadowMaps[s_numShadowMaps];
+	Texture* m_shadowTempTargets[s_numShadowMaps];
+
 	BaseLight* m_activeLight;
 	Shader* m_defaultShader;
 	Shader* m_shadowMapShader;
@@ -33,9 +39,6 @@ class RenderingEngine : public MappedValues
 	Matrix4f m_lightMatrix;
 	std::vector<BaseLight*> m_lights;
 	std::map<std::string, unsigned int> m_samplerMap;
-
-	static const Matrix4f s_biasMatrix;
-	static const int s_numShadowMaps = 10;
 
 public:
 
@@ -60,7 +63,7 @@ public:
 
 private:
 
-	void BlurShadowMap(Texture* shadowMap, float blurAmount);
+	void BlurShadowMap(int shadowMapIndex, float blurAmount);
 	void ApplyFilter(Shader* filter, Texture* source, Texture* dest);
 
 };
