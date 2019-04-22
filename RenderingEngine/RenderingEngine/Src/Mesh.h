@@ -31,7 +31,7 @@ class Mesh
 
 public:
 
-	Mesh(const std::string& fileName = "./Res/models/cube.obj");
+	Mesh(const std::string& fileName = "cube.obj");
 	Mesh(Vertex* vertices, int vertSize, int* indices, unsigned int indexSize, bool calcNormals);
 	Mesh(const Mesh& mesh);
 	virtual ~Mesh();

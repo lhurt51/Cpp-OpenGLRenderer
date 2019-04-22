@@ -34,7 +34,7 @@ Mesh::Mesh(const std::string & fileName) : m_fileName(fileName), m_meshData(0)
 	else
 	{
 		Assimp::Importer importer;
-		const aiScene* scene = importer.ReadFile(fileName.c_str(), aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+		const aiScene* scene = importer.ReadFile(("./Res/models/" + fileName).c_str(), aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
 
 		if (!scene)
 		{

@@ -23,7 +23,7 @@ void TestGame::Init(const Window& window)
 	GameObject* spotLightObject = new GameObject();
 	GameObject* directionalLightObject = new GameObject();
 
-	planeObject->AddComponent(new MeshRenderer(Mesh("./Res/models/plane4.obj"), Material(Texture("bricks.jpg"), 0.5f, 4, Texture("bricks_normal.jpg"), Texture("bricks_disp.png"), 0.03f, -0.5f)));
+	planeObject->AddComponent(new MeshRenderer(Mesh("plane4.obj"), Material(Texture("bricks.jpg"), 0.5f, 4, Texture("bricks_normal.jpg"), Texture("bricks_disp.png"), 0.03f, -0.5f)));
 	planeObject->GetTransform()->SetPos(Vector3f(0, -1, 5));
 	planeObject->GetTransform()->SetScale(4.0f);
 
@@ -40,8 +40,8 @@ void TestGame::Init(const Window& window)
 	GameObject* testMesh1 = new GameObject();
 	GameObject* testMesh2 = new GameObject();
 
-	testMesh1->AddComponent(new MeshRenderer(Mesh("./Res/models/plane3.obj"), Material(Texture("bricks2.jpg"), 1, 8, Texture("bricks2_normal.png"), Texture("bricks2_disp.jpg"), 0.04f, -1.0)));
-	testMesh2->AddComponent(new MeshRenderer(Mesh("./Res/models/plane3.obj"), Material(Texture("bricks2.jpg"), 1, 8, Texture("bricks2_normal.png"), Texture("bricks2_disp.jpg"), 0.04f, -1.0)));
+	testMesh1->AddComponent(new MeshRenderer(Mesh("plane3.obj"), Material(Texture("bricks2.jpg"), 1, 8, Texture("bricks2_normal.png"), Texture("bricks2_disp.jpg"), 0.04f, -1.0)));
+	testMesh2->AddComponent(new MeshRenderer(Mesh("plane3.obj"), Material(Texture("bricks2.jpg"), 1, 8, Texture("bricks2_normal.png"), Texture("bricks2_disp.jpg"), 0.04f, -1.0)));
 
 	testMesh1->GetTransform()->SetPos(Vector3f(0, 2, 0));
 	testMesh1->GetTransform()->SetRot(Quaternion(Vector3f(0, 1, 0), 0.4f));
@@ -61,7 +61,7 @@ void TestGame::Init(const Window& window)
 	directionalLightObject->GetTransform()->SetRot(Quaternion(Vector3f(1, 0, 0), ToRadians(-45)));
 
 	GameObject* box = new GameObject();
-	box->AddComponent(new MeshRenderer(Mesh("./Res/models/cube.obj"), Material(Texture("bricks2.jpg"), 1, 8, Texture("bricks2_normal.png"), Texture("bricks2_disp.jpg"), 0.04f, -1.0)));
+	box->AddComponent(new MeshRenderer(Mesh("cube.obj"), Material(Texture("bricks2.jpg"), 1, 8, Texture("bricks2_normal.png"), Texture("bricks2_disp.jpg"), 0.04f, -1.0)));
 
 	box->GetTransform()->SetPos(Vector3f(14, 0, 5));
 	box->GetTransform()->SetRot(Quaternion(Vector3f(0, 1, 0), ToRadians(30.0f)));
