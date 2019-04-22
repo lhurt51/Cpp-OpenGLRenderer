@@ -33,12 +33,12 @@ public:
 
 	inline T Max() const
 	{
-		T max = (*this)[0];
+		T maxVal = (*this)[0];
 
 		for (int i = 0; i < D; i++)
-			if ((*this)[i] > max)
-				max = (*this)[i];
-		return max;
+			if ((*this)[i] > maxVal)
+				maxVal = (*this)[i];
+		return maxVal;
 	}
 
 	inline T LengthSq() const { return this->Dot(*this); }

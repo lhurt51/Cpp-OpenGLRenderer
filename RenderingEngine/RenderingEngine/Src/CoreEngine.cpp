@@ -1,7 +1,6 @@
 #include "CoreEngine.h"
 #include "Utils\Util.h"
 #include "Utils\Time\Time.h"
-#include "Utils\Rendering\RenderUtil.h"
 #include "Window.h"
 #include "Input\Input.h"
 #include "Game.h"
@@ -20,21 +19,22 @@ CoreEngine::CoreEngine(int width, int height, double frameRate, Game* game) :
 
 CoreEngine::~CoreEngine()
 {
-	Window::Dispose();
+	if (m_window) delete m_window;
 	if (m_renderingEngine) delete m_renderingEngine;
 }
 
 void CoreEngine::CreateWindow(const std::string & title)
 {
-	Window::Create(m_width, m_height, title);
-	RenderUtil::InitGraphics();
-	m_renderingEngine = new RenderingEngine();
+	m_window = new Window(m_width, m_height, title);
+	m_renderingEngine = new RenderingEngine(*m_window);
 }
 
 void CoreEngine::Start()
 {
 	if (m_isRunning)
+	{
 		return;
+	}
 
 	Run();
 }
@@ -42,7 +42,9 @@ void CoreEngine::Start()
 void CoreEngine::Stop()
 {
 	if (!m_isRunning)
+	{
 		return;
+	}
 
 	m_isRunning = false;
 }
@@ -51,7 +53,7 @@ void CoreEngine::Run()
 {
 	m_isRunning = true;
 
-	m_game->Init();
+	m_game->Init(*m_window);
 
 	double lastTime = Time::GetTime();
 	double unprocessedTime = 0;
@@ -80,12 +82,14 @@ void CoreEngine::Run()
 		{
 			render = true;
 
-			if (Window::IsCloseRequested())
+			if (m_window->IsCloseRequested())
+			{
 				Stop();
+			}
 
-			Input::Update();
+			m_window->Update();
 
-			m_game->Input((float)m_frameTime);
+			m_game->ProcessInput(m_window->GetInput(), (float)m_frameTime);
 			m_game->Update((float)m_frameTime);
 
 			unprocessedTime -= m_frameTime;
@@ -94,7 +98,7 @@ void CoreEngine::Run()
 		if (render)
 		{
 			m_game->Render(m_renderingEngine);
-			Window::Render();
+			m_window->SwapBuffers();
 			frames++;
 		}
 		else

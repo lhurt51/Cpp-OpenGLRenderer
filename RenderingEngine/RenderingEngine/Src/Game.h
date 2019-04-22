@@ -16,10 +16,10 @@ public:
 	virtual ~Game()
 	{}
 
-	virtual void Init()
+	virtual void Init(const Window& window)
 	{}
 
-	void Input(float delta);
+	void ProcessInput(const Input& input, float delta);
 	void Update(float delta);
 	void Render(RenderingEngine* renderingEngine);
 

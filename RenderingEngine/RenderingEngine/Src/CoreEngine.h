@@ -8,12 +8,13 @@ class Game;
 class CoreEngine
 {
 
-	bool m_isRunning;
-	int m_width;
-	int m_height;
-	double m_frameTime;
-	Game* m_game;
-	RenderingEngine* m_renderingEngine;
+	bool				m_isRunning;
+	int					m_width;
+	int					m_height;
+	double				m_frameTime;
+	Game*				m_game;
+	RenderingEngine*	m_renderingEngine;
+	Window*				m_window;
 
 public:
 

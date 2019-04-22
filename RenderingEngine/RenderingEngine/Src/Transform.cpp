@@ -1,14 +1,14 @@
 #include "Transform.h"
 
-Transform::Transform(const Vector3f & pos, const Quaternion & rot, float scale)
+Quaternion Transform::GetTransformedRot() const
 {
-	m_pos = pos;
-	m_rot = rot;
-	m_scale = scale;
-	m_initializedoldStuff = false;
-	m_parent = 0;
+	Quaternion parentRot = Quaternion(0, 0, 0, 1);
 
-	m_parentMatrix = Matrix4f().InitIdentity();
+	if (m_parent)
+	{
+		parentRot = m_parent->GetTransformedRot();
+	}
+	return parentRot * m_rot;
 }
 
 Matrix4f Transform::GetTransformation() const
@@ -27,16 +27,24 @@ Matrix4f Transform::GetTransformation() const
 bool Transform::HasChanged()
 {
 	if (m_parent != 0 && m_parent->HasChanged())
+	{
 		return true;
+	}
 
 	if (m_pos != m_oldPos)
+	{
 		return true;
+	}
 
 	if (m_rot != m_oldRot)
+	{
 		return true;
+	}
 
 	if (m_scale != m_oldScale)
+	{
 		return true;
+	}
 
 	return false;
 }
@@ -58,22 +66,22 @@ void Transform::Update()
 	}
 }
 
-void Transform::Rotate(const Vector3f & axis, float angle)
+void Transform::Rotate(const Vector3f& axis, float angle)
 {
 	Rotate(Quaternion(axis, angle));
 }
 
-void Transform::Rotate(const Quaternion & rotation)
+void Transform::Rotate(const Quaternion& rotation)
 {
 	m_rot = Quaternion((rotation * m_rot).Normalized());
 }
 
-void Transform::LookAt(const Vector3f & point, const Vector3f & up)
+void Transform::LookAt(const Vector3f& point, const Vector3f& up)
 {
 	m_rot = GetLookAtRotation(point, up);
 }
 
-Matrix4f Transform::GetParentMatrix() const
+const Matrix4f& Transform::GetParentMatrix() const
 {
 	if (m_parent != 0 && m_parent->HasChanged())
 		m_parentMatrix = m_parent->GetTransformation();

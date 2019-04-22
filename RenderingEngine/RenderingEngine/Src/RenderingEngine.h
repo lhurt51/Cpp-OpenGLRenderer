@@ -4,67 +4,71 @@
 #include "Lighting/Lighting.h"
 #include "MappedValues.h"
 #include "Material.h"
-
+#include "Mesh.h"
+#include "Window.h"
 #include <vector>
 #include <map>
 
-class Transform;
-class Shader;
 class GameObject;
-class Mesh;
 
 class RenderingEngine : public MappedValues
 {
 
-	static const Matrix4f s_biasMatrix;
-	static const int s_numShadowMaps = 10;
+	static const Matrix4f BIAS_MATRIX;
+	static const int NUM_SHADOWS_MAPS = 10;
 
-	Camera* m_mainCamera;
-	Camera* m_altCamera;
-	GameObject* m_altCameraObject;
+	Material						m_planeMaterial;
+	Transform						m_planeTransform;
+	Mesh							m_plane;
 
-	Material* m_planeMaterial;
-	Transform m_planeTransform;
-	Mesh* m_plane;
-	Texture* m_tempTarget;
+	const Window*					m_window;
+	Texture							m_tempTarget;
+	Texture							m_shadowMaps[NUM_SHADOWS_MAPS];
+	Texture							m_shadowTempTargets[NUM_SHADOWS_MAPS];
 
-	Texture* m_shadowMaps[s_numShadowMaps];
-	Texture* m_shadowTempTargets[s_numShadowMaps];
+	Shader							m_defaultShader;
+	Shader							m_shadowMapShader;
+	Shader							m_nullFilter;
+	Shader							m_gausBlurFilter;
+	Matrix4f						m_lightMatrix;
+	
+	GameObject						m_altCameraObject;
+	Camera*							m_altCamera;
+	const Camera*					m_mainCamera;
+	const BaseLight*				m_activeLight;
+	std::vector<const BaseLight*>	m_lights;
 
-	BaseLight* m_activeLight;
-	Shader* m_defaultShader;
-	Shader* m_shadowMapShader;
-	Shader* m_nullFilter;
-	Shader* m_gausBlurFilter;
-	Matrix4f m_lightMatrix;
-	std::vector<BaseLight*> m_lights;
 	std::map<std::string, unsigned int> m_samplerMap;
 
 public:
 
-	RenderingEngine();
-	virtual ~RenderingEngine();
+	RenderingEngine(const Window& window);
+	virtual ~RenderingEngine()
+	{}
 
-	void Render(GameObject* object);
+	void Render(const GameObject& object);
 
-	inline Camera& GetMainCamera() const { return *m_mainCamera; }
-	inline BaseLight* GetActiveLight() const { return m_activeLight; }
+	inline void AddLight(const BaseLight& light) { m_lights.push_back(&light); }
+	inline void AddCamera(const Camera& camera) { m_mainCamera = &camera; }
 
-	inline void AddLight(BaseLight* light) { m_lights.push_back(light); }
-	inline void AddCamera(Camera* camera) { m_mainCamera = camera; }
+	inline const Camera& GetMainCamera() const { return *m_mainCamera; }
+	inline const BaseLight& GetActiveLight() const { return *m_activeLight; }
+	inline unsigned int GetSamplerSlot(const std::string& samplerName) const { return m_samplerMap.find(samplerName)->second; }
+	inline const Matrix4f& GetLightMatrix() const { return m_lightMatrix; }
 
-	inline unsigned int GetSamplerSlot(const std::string& samplerName) { return m_samplerMap[samplerName]; }
-	inline Matrix4f GetLightMatrix() const { return m_lightMatrix; }
-
-	virtual void UpdateUniformStruct(const Transform& transform, const Material& material, Shader* shader, const std::string& uniformName, const std::string& uniformType)
+	virtual void UpdateUniformStruct(const Transform& transform, const Material& material, const Shader& shader, const std::string& uniformName, const std::string& uniformType) const
 	{
 		throw uniformType + " is not supported by the rendering engine";
 	}
 
+protected:
+
+	inline void SetSamplerSlot(const std::string& name, unsigned int value) { m_samplerMap[name] = value; }
+
 private:
 
 	void BlurShadowMap(int shadowMapIndex, float blurAmount);
-	void ApplyFilter(Shader* filter, Texture* source, Texture* dest);
+	void ApplyFilter(const Shader& filter, const Texture& source, const Texture& dest);
 
 };
 

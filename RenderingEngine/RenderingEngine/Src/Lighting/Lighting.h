@@ -2,28 +2,39 @@
 
 #include "../Utils/Math/MathUtils.h"
 #include "../GameComponent.h"
+#include "../Shader.h"
 
 class CoreEngine;
 
-struct ShadowCameraTransform
+class ShadowCameraTransform
 {
-	Vector3f pos;
-	Quaternion rot;
+
+	Vector3f	m_pos;
+	Quaternion	m_rot;
+
+public:
+
+	ShadowCameraTransform(const Vector3f& pos, const Quaternion& rot) : m_pos(pos), m_rot(rot)
+	{}
+
+	inline const Vector3f& GetPos() const { return m_pos; }
+	inline const Quaternion& GetRot() const { return m_rot; }
+
 };
 
 class ShadowInfo
 {
 
-	Matrix4f m_projection;
-	bool m_flipFaces;
-	int m_shadowMapSizeAsPowerOf2;
-	float m_shadowSoftness;
-	float m_lightBleedReduction;
-	float m_varianceMin;
+	Matrix4f	m_projection;
+	bool		m_flipFaces;
+	int			m_shadowMapSizeAsPowerOf2;
+	float		m_shadowSoftness;
+	float		m_lightBleedReduction;
+	float		m_varianceMin;
 
 public:
 
-	ShadowInfo(const Matrix4f& projection, bool flipFaces, int shadowMapSizeAsPowerOf2, float shadowSoftness = 1.0f, float lightBleedReduction = 0.2f, float minVariance = 0.00002f) :
+	ShadowInfo(const Matrix4f& projection = Matrix4f().InitIdentity(), bool flipFaces = false, int shadowMapSizeAsPowerOf2 = 0, float shadowSoftness = 1.0f, float lightBleedReduction = 0.2f, float minVariance = 0.00002f) :
 		m_projection(projection),
 		m_flipFaces(flipFaces),
 		m_shadowMapSizeAsPowerOf2(shadowMapSizeAsPowerOf2),
@@ -44,62 +55,84 @@ public:
 class BaseLight : public GameComponent
 {
 
-	Shader* m_shader;
-	ShadowInfo* m_shadowInfo;
+	Shader		m_shader;
+	ShadowInfo	m_shadowInfo;
+	Vector3f	m_color;
+	float		m_intensity;
 
 public:
 
-	Vector3f color;
-	float intensity;
-
-	BaseLight(const Vector3f& color = Vector3f(0, 0, 0), float intensity = 0) : m_shader(0), m_shadowInfo(0), color(color), intensity(intensity)
+	BaseLight(const Vector3f& color, float intensity, const Shader& shader) : m_shader(shader), m_shadowInfo(ShadowInfo()), m_color(color), m_intensity(intensity)
 	{}
 
-	virtual ~BaseLight();
+	virtual ShadowCameraTransform CalcShadowCameraTransform(const Vector3f& mainCameraPos, const Quaternion& mainCameraRot) const;
 
-	virtual ShadowCameraTransform CalcShadowCameraTransform(const Vector3f& mainCameraPos, const Quaternion& mainCameraRot);
+	virtual void AddToEngine(CoreEngine* engine) const;
 
-	virtual void AddToEngine(CoreEngine* engine);
-	inline Shader* GetShader() const { return m_shader; }
-	inline ShadowInfo* GetShadowInfo() const { return m_shadowInfo;  }
+	inline const Vector3f& GetColor() const { return m_color; }
+	inline const float GetIntensity() const { return m_intensity; }
+	inline const Shader& GetShader() const { return m_shader; }
+	inline const ShadowInfo& GetShadowInfo() const { return m_shadowInfo;  }
 
 protected:
 
-	void SetShader(Shader* shader);
-	void SetShadowInfo(ShadowInfo* shadowInfo);
+	inline void SetShadowInfo(const ShadowInfo& shadowInfo) { m_shadowInfo = shadowInfo; }
 
 };
 
-struct DirectionalLight : public BaseLight
+class DirectionalLight : public BaseLight
 {
-	float halfShadowArea;
+	float m_halfShadowArea;
+
+public:
 
 	DirectionalLight(const Vector3f& color = Vector3f(0, 0, 0), float intensity = 0, int shadowMapSizeAsPowerOf2 = 0, float shadowArea = 80.0f, float shadowSoftness = 1.0f, float lightBleedReduction = 0.2f, float minVariance = 0.00002f);
 
-	virtual ShadowCameraTransform CalcShadowCameraTransform(const Vector3f& mainCameraPos, const Quaternion& mainCameraRot);
+	virtual ShadowCameraTransform CalcShadowCameraTransform(const Vector3f& mainCameraPos, const Quaternion& mainCameraRot) const;
+
+	inline float GetHalfShadowArea() const { return m_halfShadowArea; }
 };
 
-struct Attenuation
+class Attenuation
 {
-	float constant;
-	float linear;
-	float exponent;
+	float m_constant;
+	float m_linear;
+	float m_exponent;
 
-	Attenuation(float constant = 0, float linear = 0, float exponent = 1.0f) : constant(constant), linear(linear), exponent(exponent)
+public:
+
+	Attenuation(float constant = 0, float linear = 0, float exponent = 1.0f) : m_constant(constant), m_linear(linear), m_exponent(exponent)
 	{}
+
+	inline float GetConstant() const { return m_constant; }
+	inline float GetLinear() const { return m_linear; }
+	inline float GetExponent() const { return m_exponent; }
+
 };
 
-struct PointLight : public BaseLight
+class PointLight : public BaseLight
 {
-	Attenuation atten;
-	float range;
+	Attenuation	m_atten;
+	float		m_range;
 
-	PointLight(const Vector3f& color = Vector3f(0, 0, 0), float intensity = 0, const Attenuation& atten = Attenuation());
+public:
+
+	PointLight(const Vector3f& color = Vector3f(0, 0, 0), float intensity = 0, const Attenuation& atten = Attenuation(), const Shader& shader = Shader("forward-point"));
+
+	inline const Attenuation& GetAttenuation() const { return m_atten; }
+	inline const float GetRange() const { return m_range; }
+
 };
 
-struct SpotLight : public PointLight
+class SpotLight : public PointLight
 {
-	float cutoff;
+
+	float m_cutoff;
+
+public:
 
 	SpotLight(const Vector3f& color = Vector3f(0, 0, 0), float intensity = 0, const Attenuation& atten = Attenuation(), float viewAngle = ToRadians(170.0f), int shadowMapSizeAsPowerOf2 = 0, float shadowSoftness = 1.0f, float lightBleedReduction = 0.2f, float minVariance = 0.00002f);
+
+	inline float GetCutoff() const { return m_cutoff; }
+
 };

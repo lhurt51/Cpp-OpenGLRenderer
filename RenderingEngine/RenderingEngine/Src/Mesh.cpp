@@ -11,11 +11,10 @@
 
 std::map<std::string, MeshData*> Mesh::s_resourceMap;
 
-MeshData::MeshData(int indexSize) : ReferenceCounter()
+MeshData::MeshData(int indexSize) : ReferenceCounter(), m_size(indexSize)
 {
 	glGenBuffers(1, &m_vbo);
 	glGenBuffers(1, &m_ibo);
-	m_size = indexSize;
 }
 
 MeshData::~MeshData()
@@ -24,11 +23,8 @@ MeshData::~MeshData()
 	if (m_ibo) glDeleteBuffers(1, &m_ibo);
 }
 
-Mesh::Mesh(const std::string & fileName)
+Mesh::Mesh(const std::string & fileName) : m_fileName(fileName), m_meshData(0)
 {
-	m_fileName = fileName;
-	m_meshData = 0;
-
 	std::map<std::string, MeshData*>::const_iterator it = s_resourceMap.find(fileName);
 	if (it != s_resourceMap.end())
 	{
@@ -42,7 +38,7 @@ Mesh::Mesh(const std::string & fileName)
 
 		if (!scene)
 		{
-			std::cout << "Mesh load failed: " << fileName << std::endl;
+			std::cout << "Mesh load failed!: " << fileName << std::endl;
 			assert(0 == 0);
 		}
 
@@ -54,12 +50,12 @@ Mesh::Mesh(const std::string & fileName)
 		const aiVector3D aiZeroVector(0.0f, 0.0f, 0.0f);
 		for (unsigned int i = 0; i < model->mNumVertices; i++)
 		{
-			const aiVector3D* pPos = &(model->mVertices[i]);
-			const aiVector3D* pNormal = &(model->mNormals[i]);
-			const aiVector3D* pTexCoord = model->HasTextureCoords(0) ? &(model->mTextureCoords[0][i]) : &aiZeroVector;
-			const aiVector3D* pTangent = &(model->mTangents[i]);
+			const aiVector3D pos = model->mVertices[i];
+			const aiVector3D normal = model->mNormals[i];
+			const aiVector3D texCoord = model->HasTextureCoords(0) ? model->mTextureCoords[0][i] : aiZeroVector;
+			const aiVector3D tangent = model->mTangents[i];
 
-			Vertex vert(Vector3f(pPos->x, pPos->y, pPos->z), Vector2f(pTexCoord->x, pTexCoord->y), Vector3f(pNormal->x, pNormal->y, pNormal->z), Vector3f(pTangent->x, pTangent->y, pTangent->z));
+			Vertex vert(Vector3f(pos.x, pos.y, pos.z), Vector2f(texCoord.x, texCoord.y), Vector3f(normal.x, normal.y, normal.z), Vector3f(tangent.x, tangent.y, tangent.z));
 
 			vertices.push_back(vert);
 		}
@@ -79,10 +75,14 @@ Mesh::Mesh(const std::string & fileName)
 	}
 }
 
-Mesh::Mesh(Vertex* vertices, int vertSize, int* indices, unsigned int indexSize, bool calcNormals)
+Mesh::Mesh(Vertex* vertices, int vertSize, int* indices, unsigned int indexSize, bool calcNormals) : m_fileName("")
 {
-	m_fileName = "";
 	InitMesh(vertices, vertSize, indices, indexSize);
+}
+
+Mesh::Mesh(const Mesh & mesh) : m_fileName(mesh.m_fileName), m_meshData(mesh.m_meshData)
+{
+	m_meshData->AddReference();
 }
 
 Mesh::~Mesh()
@@ -90,12 +90,15 @@ Mesh::~Mesh()
 	if (m_meshData && m_meshData->RemoveReference())
 	{
 		if (m_fileName.length() > 0)
+		{
 			s_resourceMap.erase(m_fileName);
+		}
+
 		delete m_meshData;
 	}
 }
 
-void Mesh::Draw()
+void Mesh::Draw() const
 {
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
@@ -117,7 +120,7 @@ void Mesh::Draw()
 	glDisableVertexAttribArray(3);
 }
 
-void Mesh::CalcNormals(Vertex * vertices, int vertSize, int * indices, int indexSize)
+void Mesh::CalcNormals(Vertex * vertices, int vertSize, int * indices, int indexSize) const
 {
 	for (int i = 0; i < indexSize; i += 3)
 	{
@@ -125,18 +128,18 @@ void Mesh::CalcNormals(Vertex * vertices, int vertSize, int * indices, int index
 		int i1 = indices[i + 1];
 		int i2 = indices[i + 2];
 
-		Vector3f v1 = vertices[i1].pos - vertices[i0].pos;
-		Vector3f v2 = vertices[i2].pos - vertices[i0].pos;
+		Vector3f v1 = vertices[i1].GetPos() - vertices[i0].GetPos();
+		Vector3f v2 = vertices[i2].GetPos() - vertices[i0].GetPos();
 
 		Vector3f normal = v1.Cross(v2).Normalized();
 
-		vertices[i0].normal += normal;
-		vertices[i1].normal += normal;
-		vertices[i2].normal += normal;
+		vertices[i0].SetNormal(vertices[i0].GetNormal() + normal);
+		vertices[i1].SetNormal(vertices[i1].GetNormal() + normal);
+		vertices[i2].SetNormal(vertices[i2].GetNormal() + normal);
 	}
 
 	for (int i = 0; i < vertSize; i++)
-		vertices[i].normal = vertices[i].normal.Normalized();
+		vertices[i].SetNormal(vertices[i].GetNormal().Normalized());
 }
 
 void Mesh::InitMesh(Vertex * vertices, int vertSize, int * indices, int indexSize, bool calcNormals)
@@ -144,7 +147,9 @@ void Mesh::InitMesh(Vertex * vertices, int vertSize, int * indices, int indexSiz
 	m_meshData = new MeshData(indexSize);
 
 	if (calcNormals)
+	{
 		this->CalcNormals(vertices, vertSize, indices, indexSize);
+	}
 
 	glBindBuffer(GL_ARRAY_BUFFER, m_meshData->GetVBO());
 	glBufferData(GL_ARRAY_BUFFER, vertSize * sizeof(Vertex), vertices, GL_STATIC_DRAW);

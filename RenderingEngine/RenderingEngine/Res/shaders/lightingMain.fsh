@@ -1,12 +1,24 @@
 #include "sampling.glh"
 
+bool InRange(float val)
+{
+	return val >= 0.0 && val <= 1.0;
+}
+
 float CalcShadowAmount(sampler2D shadowMap, vec4 initShadowMapCoords)
 {
 	// Perspective divide same as gl_position but needs to be in a range
 	vec3 shadowMapCoords = (initShadowMapCoords.xyz / initShadowMapCoords.w);
 
-	// How far nearest object is from the light
-	return SampleVarianceShadowMap(shadowMap, shadowMapCoords.xy, shadowMapCoords.z, R_shadowVarianceMin, R_shadowLightBleedReduction);
+	if (InRange(shadowMapCoords.z) && InRange(shadowMapCoords.y) && InRange(shadowMapCoords.x))
+	{
+		// How far nearest object is from the light
+		return SampleVarianceShadowMap(shadowMap, shadowMapCoords.xy, shadowMapCoords.z, R_shadowVarianceMin, R_shadowLightBleedReduction);
+	}
+	else
+	{
+		return 1.0;
+	}
 }
 
 void main ()

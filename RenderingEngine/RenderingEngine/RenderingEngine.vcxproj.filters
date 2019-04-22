@@ -51,13 +51,7 @@
     <ClCompile Include="Src\RenderingEngine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Src\SDL\SDL_Backend.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Src\Window.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\Utils\Rendering\RenderUtil.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Src\Input\Input.cpp">
@@ -82,6 +76,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Src\Camera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\MappedValues.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Material.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -134,13 +134,7 @@
     <ClInclude Include="Src\Material.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Src\SDL\SDL_Backend.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Src\Window.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Src\Utils\Rendering\RenderUtil.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Src\Input\Input.h">
@@ -197,5 +191,7 @@
     <None Include="Res\shaders\filter-null.fs" />
     <None Include="Res\shaders\filter-gausBlur7x1.vs" />
     <None Include="Res\shaders\filter-gausBlur7x1.fs" />
+    <None Include="Res\shaders\basicShader.fs" />
+    <None Include="Res\shaders\basicShader.vs" />
   </ItemGroup>
 </Project>

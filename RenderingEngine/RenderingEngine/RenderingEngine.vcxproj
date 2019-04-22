@@ -134,11 +134,12 @@
     <ClCompile Include="Src\GameObject.cpp" />
     <ClCompile Include="Src\Input\Input.cpp" />
     <ClCompile Include="Src\Lighting\Lighting.cpp" />
+    <ClCompile Include="Src\MappedValues.cpp" />
+    <ClCompile Include="Src\Material.cpp" />
     <ClCompile Include="Src\RenderingEngine.cpp" />
     <ClCompile Include="Src\CoreEngine.cpp" />
     <ClCompile Include="Src\Mesh.cpp" />
     <ClCompile Include="Src\ObjLoader\obj_loader.cpp" />
-    <ClCompile Include="Src\SDL\SDL_Backend.cpp" />
     <ClCompile Include="Src\Shader.cpp" />
     <ClCompile Include="Src\Display.cpp" />
     <ClCompile Include="Src\Source.cpp" />
@@ -146,7 +147,6 @@
     <ClCompile Include="Src\Texture.cpp" />
     <ClCompile Include="Src\Transform.cpp" />
     <ClCompile Include="Src\Utils\Math\MathUtils.cpp" />
-    <ClCompile Include="Src\Utils\Rendering\RenderUtil.cpp" />
     <ClCompile Include="Src\Utils\Time\Time.cpp" />
     <ClCompile Include="Src\Utils\Util.cpp" />
     <ClCompile Include="Src\Window.cpp" />
@@ -170,14 +170,12 @@
     <ClInclude Include="Src\Camera.h" />
     <ClInclude Include="Src\Mesh.h" />
     <ClInclude Include="Src\ObjLoader\obj_loader.h" />
-    <ClInclude Include="Src\SDL\SDL_Backend.h" />
     <ClInclude Include="Src\Shader.h" />
     <ClInclude Include="Src\Display.h" />
     <ClInclude Include="Src\stb\stb_image.h" />
     <ClInclude Include="Src\Texture.h" />
     <ClInclude Include="Src\Transform.h" />
     <ClInclude Include="Src\Utils\Math\MathUtils.h" />
-    <ClInclude Include="Src\Utils\Rendering\RenderUtil.h" />
     <ClInclude Include="Src\Utils\Time\Time.h" />
     <ClInclude Include="Src\Utils\Util.h" />
     <ClInclude Include="Src\Window.h" />
@@ -187,6 +185,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="res\basicShader.fs" />
+    <None Include="Res\shaders\basicShader.fs" />
+    <None Include="Res\shaders\basicShader.vs" />
     <None Include="Res\shaders\filter-gausBlur7x1.fs" />
     <None Include="Res\shaders\filter-gausBlur7x1.vs" />
     <None Include="Res\shaders\filter-null.fs" />

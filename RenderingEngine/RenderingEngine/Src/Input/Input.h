@@ -2,6 +2,8 @@
 
 #include "../Utils/Math/MathUtils.h"
 
+class Window;
+
 class Input
 {
 public:
@@ -9,9 +11,9 @@ public:
 	// Input Keys and handling https://github.com/BennyQBD/3DGameEngineCpp_60/blob/master/3DEngineCpp/input.cpp
 	enum
 	{
-		LEFT_MOUSE = 1,
-		MIDDLE_MOUSE = 2,
-		RIGHT_MOUSE = 3,
+		MOUSE_LEFT_BUTTON = 1,
+		MOUSE_MIDDLE_BUTTON = 2,
+		MOUSE_RIGHT_BUTTON = 3,
 		MOUSE_WHEEL_UP = 4,
 		MOUSE_WHEEL_DOWN = 5
 	};
@@ -365,19 +367,43 @@ public:
 		KEY_APP2 = 284,
 	};
 
-	static void Update();
+	static const int NUM_KEYS = 512;
+	static const int NUM_MOUSEBUTTONS = 256;
 
-	static bool GetKey(int keyCode);
-	static bool GetKeyDown(int keyCode);
-	static bool GetKeyUp(int keyCode);
+private:
 
-	static bool GetMouse(int button);
-	static bool GetMouseDown(int button);
-	static bool GetMouseUp(int button);
+	Window* m_window;
+	bool m_inputs[NUM_KEYS];
+	bool m_downKeys[NUM_KEYS];
+	bool m_upKeys[NUM_KEYS];
+	bool m_mouseInput[NUM_MOUSEBUTTONS];
+	bool m_downMouse[NUM_MOUSEBUTTONS];
+	bool m_upMouse[NUM_MOUSEBUTTONS];
+	int m_mouseX;
+	int m_mouseY;
 
-	static Vector2f GetMousePosition();
+public:
 
-	static void SetCursor(bool visible);
-	static void SetMousePosition(Vector2f pos);
+	Input(Window* window);
+
+	inline bool GetKey(int keyCode) const { return m_inputs[keyCode]; }
+	inline bool GetKeyDown(int keyCode) const { return m_downKeys[keyCode]; }
+	inline bool GetKeyUp(int keyCode) const { return m_upKeys[keyCode]; }
+	inline bool GetMouse(int keyCode) const { return m_mouseInput[keyCode]; }
+	inline bool GetMouseDown(int keyCode) const { return m_downMouse[keyCode]; }
+	inline bool GetMouseUp(int keyCode) const { return m_upMouse[keyCode]; }
+	inline Vector2f GetMousePosition() const { return Vector2f((float)m_mouseX, (float)m_mouseY); }
+
+	void SetCursor(bool visible) const;
+	void SetMousePosition(const Vector2f& pos) const;
+
+	inline void SetKey(int keyCode, bool value) { m_inputs[keyCode] = value; }
+	inline void SetKeyDown(int keyCode, bool value) { m_downKeys[keyCode] = value; }
+	inline void SetKeyUp(int keyCode, bool value) { m_upKeys[keyCode] = value; }
+	inline void SetMouse(int keyCode, bool value) { m_mouseInput[keyCode] = value; }
+	inline void SetMouseDown(int keyCode, bool value) { m_downMouse[keyCode] = value; }
+	inline void SetMouseUp(int keyCode, bool value) { m_upMouse[keyCode] = value; }
+	inline void SetMouseX(int value) { m_mouseX = value; }
+	inline void SetMouseY(int value) { m_mouseY = value; }
 
 };

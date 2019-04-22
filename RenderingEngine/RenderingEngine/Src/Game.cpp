@@ -2,9 +2,9 @@
 #include "RenderingEngine.h"
 #include <iostream>
 
-void Game::Input(float delta)
+void Game::ProcessInput(const Input& input, float delta)
 {
-	m_root.InputAll(delta);
+	m_root.ProcessInputAll(input, delta);
 }
 
 void Game::Update(float delta)
@@ -12,7 +12,7 @@ void Game::Update(float delta)
 	m_root.UpdateAll(delta);
 }
 
-void Game::Render(RenderingEngine * renderingEngine)
+void Game::Render(RenderingEngine* renderingEngine)
 {
-	renderingEngine->Render(&m_root);
+	renderingEngine->Render(m_root);
 }

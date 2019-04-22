@@ -24,8 +24,8 @@ public:
 	inline int GetWidth() const { return m_width; }
 	inline int GetHeight() const { return m_height; }
 
-	void Bind(int textureNum);
-	void BindAsRenderTarget();
+	void Bind(int textureNum) const;
+	void BindAsRenderTarget() const;
 
 private:
 
@@ -45,13 +45,18 @@ class Texture
 public:
 	Texture(const std::string& fileName, GLenum textureTarget = GL_TEXTURE_2D, GLfloat filter = GL_LINEAR, GLenum internalFormat = GL_RGBA, GLenum format = GL_RGBA, bool clamp = false, GLenum attachment = GL_NONE);
 	Texture(int width = 0, int height = 0, unsigned char* data = 0, GLenum textureTarget = GL_TEXTURE_2D, GLfloat filter = GL_LINEAR, GLenum internalFormat = GL_RGBA, GLenum format = GL_RGBA, bool clamp = false, GLenum attachment = GL_NONE);
+	Texture(const Texture& texture);
 	virtual ~Texture();
 
 	inline int GetWidth() const { return m_textureData->GetWidth(); }
 	inline int GetHeight() const { return m_textureData->GetHeight(); }
 
 	void Bind(unsigned int unit = 0) const;
-	void BindAsRenderTarget();
+	void BindAsRenderTarget() const;
+
+	void operator=(Texture texture);
+	bool operator==(const Texture& texture) const { return m_textureData == texture.m_textureData; }
+	bool operator!=(const Texture& texture) const { return !operator==(texture); }
 
 };
 
