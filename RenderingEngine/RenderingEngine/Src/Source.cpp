@@ -35,7 +35,7 @@ void TestGame::Init()
 	spotLightObject->GetTransform().Rotate(Quaternion(Vector3f(1, 0, 0), ToRadians(-60.0f)));
 	spotLightObject->GetTransform().SetPos(Vector3f(10, 1.0f, 5));
 
-	directionalLightObject->AddComponent(new DirectionalLight(Vector3f(1, 1, 1), 0.4f));
+	directionalLightObject->AddComponent(new DirectionalLight(Vector3f(1, 1, 1), 0.4f, 10, 80.0f, 1.0f));
 
 	GameObject* testMesh1 = new GameObject();
 	GameObject* testMesh2 = new GameObject();
@@ -52,9 +52,9 @@ void TestGame::Init()
 	testMesh1->AddChild(testMesh2);
 
 	AddToScene(planeObject);
-	// AddToScene(pointLightObject);
+	AddToScene(pointLightObject);
 	AddToScene(spotLightObject);
-	// AddToScene(directionalLightObject);
+	AddToScene(directionalLightObject);
 	AddToScene(testMesh1);
 	testMesh2->AddChild((new GameObject())->AddComponent(new Camera(Matrix4f().InitPerspective(ToRadians(70.0f), Window::GetAspect(), 0.1f, 1000.0f)))->AddComponent(new FreeLook())->AddComponent(new FreeMove()));
 

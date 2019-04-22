@@ -55,6 +55,8 @@ RenderingEngine::RenderingEngine()
 		m_shadowMaps[i] = new Texture(shadowMapSize, shadowMapSize, 0, GL_TEXTURE_2D, GL_LINEAR, GL_RG32F, GL_RGBA, true, GL_COLOR_ATTACHMENT0);
 		m_shadowTempTargets[i] = new Texture(shadowMapSize, shadowMapSize, 0, GL_TEXTURE_2D, GL_LINEAR, GL_RG32F, GL_RGBA, true, GL_COLOR_ATTACHMENT0);
 	}
+
+	m_lightMatrix = Matrix4f().InitScale(Vector3f(0, 0, 0));
 }
 
 RenderingEngine::~RenderingEngine()
@@ -95,18 +97,20 @@ void	RenderingEngine::Render(GameObject* object)
 		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 		*/
 
+		int shadowMapIndex = 0;
+		if (shadowInfo)
+			shadowMapIndex = shadowInfo->GetShadowMapSizeAsPowerOf2() - 1;
+		SetTexture("shadowMap", m_shadowMaps[shadowMapIndex]);
+		m_shadowMaps[shadowMapIndex]->BindAsRenderTarget();
+		glClearColor(0.0f, 1.0f, 0.0f, 0.0f);
+		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+
 		if (shadowInfo)
 		{
-			int shadowMapIndex = shadowInfo->GetShadowMapSizeAsPowerOf2() - 1;
-
-			SetTexture("shadowMap", m_shadowMaps[shadowMapIndex]);
-			m_shadowMaps[shadowMapIndex]->BindAsRenderTarget();
-			glClearColor(0.0f, 1.0f, 0.0f, 0.0f);
-			glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-
 			m_altCamera->SetProjection(shadowInfo->GetProjection());
-			m_altCamera->GetTransform().SetPos(m_activeLight->GetTransform().GetTransformedPos());
-			m_altCamera->GetTransform().SetRot(m_activeLight->GetTransform().GetTransformedRot());
+			ShadowCameraTransform shadowCameraTransform = m_activeLight->CalcShadowCameraTransform(m_mainCamera->GetTransform().GetTransformedPos(), m_mainCamera->GetTransform().GetTransformedRot());
+			m_altCamera->GetTransform().SetPos(shadowCameraTransform.pos);
+			m_altCamera->GetTransform().SetRot(shadowCameraTransform.rot);
 
 			m_lightMatrix = s_biasMatrix * m_altCamera->GetViewProjection();
 
@@ -129,10 +133,6 @@ void	RenderingEngine::Render(GameObject* object)
 		}
 		else
 		{
-			SetTexture("shadowMap", m_shadowMaps[0]);
-			m_shadowMaps[0]->BindAsRenderTarget();
-			glClearColor(0.0f, 1.0f, 0.0f, 0.0f);
-			glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 			m_lightMatrix = Matrix4f().InitScale(Vector3f(Vector3f(0, 0, 0)));
 			SetFloat("shadowVarianceMin", 0.00002f);
 			SetFloat("shadowLightBleedReduction", 0.0f);

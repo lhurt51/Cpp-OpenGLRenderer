@@ -12,6 +12,14 @@ BaseLight::~BaseLight()
 	if (m_shadowInfo) delete m_shadowInfo;
 }
 
+ShadowCameraTransform BaseLight::CalcShadowCameraTransform(const Vector3f & mainCameraPos, const Quaternion & mainCameraRot)
+{
+	ShadowCameraTransform result;
+	result.pos = GetTransform().GetTransformedPos();
+	result.rot = GetTransform().GetTransformedRot();
+	return result;
+}
+
 void BaseLight::AddToEngine(CoreEngine * engine)
 {
 	engine->GetRenderingEngine()->AddLight(this);
@@ -29,11 +37,35 @@ void BaseLight::SetShadowInfo(ShadowInfo* shadowInfo)
 	m_shadowInfo = shadowInfo;
 }
 
-DirectionalLight::DirectionalLight(const Vector3f& color, float intensity) : BaseLight(color, intensity)
+DirectionalLight::DirectionalLight(const Vector3f& color, float intensity, int shadowMapSizeAsPowerOf2, float shadowArea, float shadowSoftness, float lightBleedReduction, float minVariance) : BaseLight(color, intensity)
 {
 	SetShader(new Shader("forward-directional"));
-	SetShadowInfo(new ShadowInfo(Matrix4f().InitOrthographic(-40, 40, -40, 40, -40, 40), true, 10));
+
+	this->halfShadowArea = shadowArea / 2.0f;
+	if (shadowMapSizeAsPowerOf2 != 0)
+	{
+		SetShadowInfo(new ShadowInfo(Matrix4f().InitOrthographic(-halfShadowArea, halfShadowArea, -halfShadowArea, halfShadowArea, -halfShadowArea, halfShadowArea), true, shadowMapSizeAsPowerOf2, shadowSoftness, lightBleedReduction, minVariance));
+	}
 }
+
+ShadowCameraTransform DirectionalLight::CalcShadowCameraTransform(const Vector3f & mainCameraPos, const Quaternion & mainCameraRot)
+{
+	ShadowCameraTransform result;
+	result.pos = mainCameraPos + mainCameraRot.GetForward() * halfShadowArea;
+	result.rot = GetTransform().GetTransformedRot();
+
+	float worldTexelSize = (halfShadowArea * 2) / ((float)(1 << GetShadowInfo()->GetShadowMapSizeAsPowerOf2()));
+
+	Vector3f lightSpaceCameraPos = result.pos.Rotate(result.rot.Conjugate());
+
+	lightSpaceCameraPos.SetX(worldTexelSize * floor(lightSpaceCameraPos.GetX() / worldTexelSize));
+	lightSpaceCameraPos.SetY(worldTexelSize * floor(lightSpaceCameraPos.GetY() / worldTexelSize));
+
+	result.pos = lightSpaceCameraPos.Rotate(result.rot);
+
+	return result;
+}
+
 
 PointLight::PointLight(const Vector3f& color, float intensity, const Attenuation & atten) : BaseLight(color, intensity), atten(atten)
 {

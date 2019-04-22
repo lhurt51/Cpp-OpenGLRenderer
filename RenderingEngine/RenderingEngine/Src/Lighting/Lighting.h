@@ -5,6 +5,12 @@
 
 class CoreEngine;
 
+struct ShadowCameraTransform
+{
+	Vector3f pos;
+	Quaternion rot;
+};
+
 class ShadowInfo
 {
 
@@ -51,6 +57,8 @@ public:
 
 	virtual ~BaseLight();
 
+	virtual ShadowCameraTransform CalcShadowCameraTransform(const Vector3f& mainCameraPos, const Quaternion& mainCameraRot);
+
 	virtual void AddToEngine(CoreEngine* engine);
 	inline Shader* GetShader() const { return m_shader; }
 	inline ShadowInfo* GetShadowInfo() const { return m_shadowInfo;  }
@@ -64,7 +72,11 @@ protected:
 
 struct DirectionalLight : public BaseLight
 {
-	DirectionalLight(const Vector3f& color = Vector3f(0, 0, 0), float intensity = 0);
+	float halfShadowArea;
+
+	DirectionalLight(const Vector3f& color = Vector3f(0, 0, 0), float intensity = 0, int shadowMapSizeAsPowerOf2 = 0, float shadowArea = 80.0f, float shadowSoftness = 1.0f, float lightBleedReduction = 0.2f, float minVariance = 0.00002f);
+
+	virtual ShadowCameraTransform CalcShadowCameraTransform(const Vector3f& mainCameraPos, const Quaternion& mainCameraRot);
 };
 
 struct Attenuation
