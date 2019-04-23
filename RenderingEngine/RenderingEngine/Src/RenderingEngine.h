@@ -17,12 +17,12 @@ class RenderingEngine : public MappedValues
 	static const Matrix4f BIAS_MATRIX;
 	static const int NUM_SHADOWS_MAPS = 10;
 
-	Material						m_planeMaterial;
 	Transform						m_planeTransform;
 	Mesh							m_plane;
 
 	const Window*					m_window;
 	Texture							m_tempTarget;
+	Material						m_planeMaterial;
 	Texture							m_shadowMaps[NUM_SHADOWS_MAPS];
 	Texture							m_shadowTempTargets[NUM_SHADOWS_MAPS];
 
