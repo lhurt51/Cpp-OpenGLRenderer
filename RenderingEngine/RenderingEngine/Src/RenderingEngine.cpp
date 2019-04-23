@@ -45,6 +45,8 @@ RenderingEngine::RenderingEngine(const Window& window) :
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_DEPTH_CLAMP);
+	// MSAA
+	glEnable(GL_MULTISAMPLE);
 
 	// Render To Texture Init
 	m_altCamera = new Camera(Matrix4f().InitIdentity());
