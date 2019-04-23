@@ -181,10 +181,6 @@
     <ClInclude Include="Src\Window.h" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="res\basicShader.vs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="res\basicShader.fs" />
     <None Include="Res\shaders\basicShader.fs" />
     <None Include="Res\shaders\basicShader.vs" />
     <None Include="Res\shaders\filter-gausBlur7x1.fs" />
