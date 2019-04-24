@@ -23,6 +23,8 @@ Window::Window(int width, int height, const std::string & title) : m_width(width
 
 	SDL_GL_SetSwapInterval(1);
 
+	glewExperimental = GL_TRUE;
+
 	GLenum res = glewInit();
 	if (res != GLEW_OK)
 	{
