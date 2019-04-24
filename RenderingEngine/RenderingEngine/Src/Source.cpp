@@ -21,6 +21,21 @@ void TestGame::Init(const Window& window)
 	Material bricks("bricks", Texture("bricks.jpg"), 0.5f, 4, Texture("bricks_normal.jpg"), Texture("bricks_disp.png"), 0.03f, -0.5f);
 	Material bricks2("bricks2", Texture("bricks2.jpg"), 1, 8, Texture("bricks2_normal.png"), Texture("bricks2_disp.jpg"), 0.04f, -1.0);
 
+	IndexedModel square;
+	{
+		square.AddVertex(1.0f, -1.0f, 0.0f);
+		square.AddTexCoord(Vector2f(1.0f, 1.0f));
+		square.AddVertex(1.0f, 1.0f, 0.0f);
+		square.AddTexCoord(Vector2f(1.0f, 0.0f));
+		square.AddVertex(-1.0f, -1.0f, 0.0f);
+		square.AddTexCoord(Vector2f(0.0f, 1.0f));
+		square.AddVertex(-1.0f, 1.0f, 0.0f);
+		square.AddTexCoord(Vector2f(0.0f, 0.0f));
+		square.AddFace(0, 1, 2);
+		square.AddFace(2, 1, 3);
+	}
+	Mesh customMesh("square", square.Finalize());
+
 	AddToScene((new GameObject(Vector3f(0, -1, 5), Quaternion(), 4.0f))
 		->AddComponent(new MeshRenderer(Mesh("plane4.obj"), Material("bricks"))));
 	AddToScene((new GameObject(Vector3f(7, 0, 7)))
@@ -40,6 +55,9 @@ void TestGame::Init(const Window& window)
 				->AddComponent(new FreeMove()))));
 	AddToScene((new GameObject(Vector3f(14, 0, 5), Quaternion(Vector3f(0, 1, 0), ToRadians(30.0f))))
 		->AddComponent(new MeshRenderer(Mesh("cube.obj"), Material("bricks2"))));
+
+	AddToScene((new GameObject(Vector3f(0, 0, 7), Quaternion(), 1.0f))
+		->AddComponent(new MeshRenderer(Mesh("square"), Material("bricks2"))));
 }
 
 int main(int argc, char* argv[])

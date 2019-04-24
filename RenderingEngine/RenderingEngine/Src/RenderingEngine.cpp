@@ -3,7 +3,7 @@
 #include "GameObject.h"
 #include "Shader.h"
 #include <GL/glew.h>
-#include "Mesh.h"
+#include "Mesh/Mesh.h"
 #include <cassert>
 
 const Matrix4f RenderingEngine::BIAS_MATRIX = Matrix4f().InitScale(Vector3f(0.5, 0.5, 0.5)) * Matrix4f().InitTranslation(Vector3f(1.0, 1.0, 1.0));

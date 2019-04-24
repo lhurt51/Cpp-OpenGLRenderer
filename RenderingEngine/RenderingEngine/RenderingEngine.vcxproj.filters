@@ -24,16 +24,10 @@
     <ClCompile Include="Src\Shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Mesh.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Src\stb\stb_image.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Src\Texture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\ObjLoader\obj_loader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Src\Utils\Util.cpp">
@@ -84,15 +78,15 @@
     <ClCompile Include="Src\Material.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Src\Mesh\Mesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\Display.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Src\Shader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Src\Mesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Src\stb\stb_image.h">
@@ -105,9 +99,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Src\Camera.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Src\ObjLoader\obj_loader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Src\Utils\Util.h">
@@ -164,7 +155,7 @@
     <ClInclude Include="Src\FreeLook.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Mesh\Vertex.h">
+    <ClInclude Include="Src\Mesh\Mesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

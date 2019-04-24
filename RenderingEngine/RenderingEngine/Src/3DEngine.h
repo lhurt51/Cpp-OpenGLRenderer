@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Mesh.h"
+#include "Mesh\Mesh.h"
 #include "Shader.h"
 #include "Transform.h"
 #include "Camera.h"
@@ -10,3 +10,4 @@
 #include "Window.h"
 #include "CoreEngine.h"
 #include "Game.h"
+#undef main

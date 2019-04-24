@@ -42,7 +42,7 @@ public:
 	}
 
 	inline T LengthSq() const { return this->Dot(*this); }
-	inline T Length() const { return sqrt(LengthSq()); }
+	inline T Length() const { return T(sqrt(LengthSq())); }
 	inline Vector<T, D> Normalized() const { return *this / Length(); }
 	inline Vector<T, D> Lerp(const Vector<T, D>& r, T lerpFactor) const { return (r - *this) * lerpFactor + *this; }
 

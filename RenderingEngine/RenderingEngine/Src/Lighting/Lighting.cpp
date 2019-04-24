@@ -55,6 +55,6 @@ SpotLight::SpotLight(const Vector3f& color, float intensity, const Attenuation& 
 {
 	if (shadowMapSizeAsPowerOf2 != 0)
 	{
-		SetShadowInfo(ShadowInfo(Matrix4f().InitPerspective(viewAngle, 1.0, 0.1, GetRange()), false, shadowMapSizeAsPowerOf2, shadowSoftness, lightBleedReduction, minVariance));
+		SetShadowInfo(ShadowInfo(Matrix4f().InitPerspective(viewAngle, 1.0f, 0.1f, GetRange()), false, shadowMapSizeAsPowerOf2, shadowSoftness, lightBleedReduction, minVariance));
 	}
 }

@@ -4,7 +4,7 @@
 #include "Lighting/Lighting.h"
 #include "MappedValues.h"
 #include "Material.h"
-#include "Mesh.h"
+#include "Mesh/Mesh.h"
 #include "Window.h"
 #include <vector>
 #include <map>
