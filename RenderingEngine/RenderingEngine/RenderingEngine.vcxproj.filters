@@ -81,6 +81,9 @@
     <ClCompile Include="Src\Mesh\Mesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Src\Profiling.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\Display.h">
@@ -158,6 +161,9 @@
     <ClInclude Include="Src\Mesh\Mesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Profiling.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Res\shaders\forward-ambient.vs" />
@@ -180,5 +186,7 @@
     <None Include="Res\shaders\filter-gausBlur7x1.fs" />
     <None Include="Res\shaders\basicShader.fs" />
     <None Include="Res\shaders\basicShader.vs" />
+    <None Include="Res\shaders\filter-fxaa.fs" />
+    <None Include="Res\shaders\filter-fxaa.vs" />
   </ItemGroup>
 </Project>

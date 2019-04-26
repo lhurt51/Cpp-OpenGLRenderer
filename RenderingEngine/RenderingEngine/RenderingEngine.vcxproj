@@ -136,6 +136,7 @@
     <ClCompile Include="Src\Lighting\Lighting.cpp" />
     <ClCompile Include="Src\MappedValues.cpp" />
     <ClCompile Include="Src\Material.cpp" />
+    <ClCompile Include="Src\Profiling.cpp" />
     <ClCompile Include="Src\RenderingEngine.cpp" />
     <ClCompile Include="Src\CoreEngine.cpp" />
     <ClCompile Include="Src\Mesh\Mesh.cpp" />
@@ -161,6 +162,7 @@
     <ClInclude Include="Src\MappedValues.h" />
     <ClInclude Include="Src\Material.h" />
     <ClInclude Include="Src\Mesh\MeshRenderer.h" />
+    <ClInclude Include="Src\Profiling.h" />
     <ClInclude Include="Src\Utils\ReferenceCounter.h" />
     <ClInclude Include="Src\RenderingEngine.h" />
     <ClInclude Include="Src\CoreEngine.h" />
@@ -180,6 +182,8 @@
   <ItemGroup>
     <None Include="Res\shaders\basicShader.fs" />
     <None Include="Res\shaders\basicShader.vs" />
+    <None Include="Res\shaders\filter-fxaa.fs" />
+    <None Include="Res\shaders\filter-fxaa.vs" />
     <None Include="Res\shaders\filter-gausBlur7x1.fs" />
     <None Include="Res\shaders\filter-gausBlur7x1.vs" />
     <None Include="Res\shaders\filter-null.fs" />

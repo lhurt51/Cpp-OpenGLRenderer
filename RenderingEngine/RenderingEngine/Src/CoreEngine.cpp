@@ -73,7 +73,9 @@ void CoreEngine::Run()
 
 		if (framesCounter >= 1.0)
 		{
-			printf("%i\n", frames);
+			// printf("%i\n", frames);
+			m_renderingEngine->DisplayProfileInfo();
+			printf("Total Time: %f ms\n", 1000.0 / (double)frames);
 			frames = 0;
 			framesCounter = 0;
 		}
@@ -97,7 +99,7 @@ void CoreEngine::Run()
 
 		if (render)
 		{
-			m_game->Render(m_renderingEngine);
+			m_game->Render(m_renderingEngine, *m_mainCamera);
 			m_window->SwapBuffers();
 			frames++;
 		}

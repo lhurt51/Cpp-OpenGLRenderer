@@ -258,7 +258,7 @@ void ShaderData::ConvertFragmentShaderToGLSL330(std::string * shaderText)
 
 	String_ReplaceAll(shaderText, "varying", "in");
 	String_ReplaceAll(shaderText, "texture2D", "texture");
-	String_FindAndReplace(shaderText, "gl_FragColor", "OUT_Fragment_Color");
+	String_ReplaceAll(shaderText, "gl_FragColor", "OUT_Fragment_Color");
 
 	std::string newFragout = "out vec4 OUT_Fragment_Color;\n";
 	size_t start = shaderText->find("\n");
@@ -302,10 +302,10 @@ void Shader::Bind() const
 	glUseProgram(m_shaderData->GetProgram());
 }
 
-void Shader::UpdateUniforms(const Transform& transform, const Material & material, const RenderingEngine& renderingEngine) const
+void Shader::UpdateUniforms(const Transform& transform, const Material & material, const RenderingEngine& renderingEngine, const Camera& camera) const
 {
 	Matrix4f worldMatrix = transform.GetTransformation();
-	Matrix4f projectedMatrix = renderingEngine.GetMainCamera().GetViewProjection() * worldMatrix;
+	Matrix4f projectedMatrix = camera.GetViewProjection() * worldMatrix;
 
 	for (unsigned int i = 0; i < m_shaderData->GetUniformNames().size(); i++)
 	{
@@ -355,7 +355,7 @@ void Shader::UpdateUniforms(const Transform& transform, const Material & materia
 		else if (uniformName.substr(0, 2) == "C_")
 		{
 			if (uniformName == "C_eyePos")
-				SetUniformVector3f(uniformName, renderingEngine.GetMainCamera().GetTransform().GetTransformedPos());
+				SetUniformVector3f(uniformName, camera.GetTransform().GetTransformedPos());
 			else
 				throw "Invalid Camera Uniform: " + uniformName;
 		}

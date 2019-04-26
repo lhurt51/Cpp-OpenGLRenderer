@@ -4,6 +4,7 @@
 #include "Transform.h"
 #include "Input\Input.h"
 
+class Camera;
 class CoreEngine;
 class GameComponent;
 class Shader;
@@ -29,7 +30,7 @@ public:
 
 	void ProcessInputAll(const Input& input, float delta);
 	void UpdateAll(float delta);
-	void RenderAll(const Shader& shader, const RenderingEngine& renderingEngine) const;
+	void RenderAll(const Shader& shader, const RenderingEngine& renderingEngine, const Camera& camera) const;
 
 	std::vector<GameObject*> GetAllAttached();
 
@@ -40,7 +41,7 @@ private:
 
 	void ProcessInput(const Input& input, float delta);
 	void Update(float delta);
-	void Render(const Shader& shader, const RenderingEngine& renderingEngine) const;
+	void Render(const Shader& shader, const RenderingEngine& renderingEngine, const Camera& camera) const;
 
 };
 

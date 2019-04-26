@@ -5,9 +5,7 @@ Quaternion Transform::GetTransformedRot() const
 	Quaternion parentRot = Quaternion(0, 0, 0, 1);
 
 	if (m_parent)
-	{
 		parentRot = m_parent->GetTransformedRot();
-	}
 	return parentRot * m_rot;
 }
 

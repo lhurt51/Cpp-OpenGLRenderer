@@ -15,6 +15,7 @@ class CoreEngine
 	Game*				m_game;
 	RenderingEngine*	m_renderingEngine;
 	Window*				m_window;
+	const Camera*		m_mainCamera;
 
 public:
 
@@ -27,6 +28,7 @@ public:
 	void Stop();
 
 	inline RenderingEngine* GetRenderingEngine() { return m_renderingEngine; }
+	void SetCamera(const Camera& camera) { m_mainCamera = &camera; }
 
 private:
 
