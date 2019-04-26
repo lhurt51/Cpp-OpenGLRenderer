@@ -22,10 +22,25 @@ void ProfileTimer::StopInvocation()
 	m_startTime = 0;
 }
 
-void ProfileTimer::DisplayAndReset(const std::string& message)
+double ProfileTimer::GetTimeAndReset(double dividend)
 {
-	std::cout << message << ((1000.0 * m_totalTime) / ((double)m_numInvocations)) << " ms" << std::endl;
-
+	dividend = (dividend == 0) ? m_numInvocations : dividend;
+	double result = (m_totalTime == 0 && dividend == 0.0) ? 0.0 : (1000.0 * m_totalTime) / ((double)dividend);
 	m_totalTime = 0.0;
 	m_numInvocations = 0;
+
+	return result;
+}
+
+double ProfileTimer::DisplayAndReset(const std::string& message, double dividend, int displayedMessageLength)
+{
+	std::string whiteSpace = "";
+	for (int i = message.length(); i < displayedMessageLength; i++)
+	{
+		whiteSpace += " ";
+	}
+
+	double time = GetTimeAndReset(dividend);
+	std::cout << message << whiteSpace << time << " ms" << std::endl;
+	return time;
 }

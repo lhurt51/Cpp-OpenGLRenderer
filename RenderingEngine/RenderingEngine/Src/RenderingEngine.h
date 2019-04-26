@@ -20,6 +20,8 @@ class RenderingEngine : public MappedValues
 	static const int NUM_SHADOWS_MAPS = 10;
 
 	ProfileTimer					m_renderProfileTimer;
+	ProfileTimer					m_windowSyncProfileTimer;
+
 	Transform						m_planeTransform;
 	Mesh							m_plane;
 
@@ -63,7 +65,8 @@ public:
 		throw uniformType + " is not supported by the rendering engine";
 	}
 
-	inline void DisplayProfileInfo() { m_renderProfileTimer.DisplayAndReset("Render Time: "); }
+	inline double DisplayRenderTime(double dividend) { return m_renderProfileTimer.DisplayAndReset("Render Time: ", dividend); }
+	inline double DisplayWindowSyncTime(double dividend) { return m_windowSyncProfileTimer.DisplayAndReset("Window Sync Time: ", dividend); }
 
 protected:
 

@@ -7,7 +7,9 @@
 class Game
 {
 
-	GameObject m_root;
+	ProfileTimer	m_updatetimer;
+	ProfileTimer	m_inputTimer;
+	GameObject		m_root;
 
 public:
 
@@ -25,6 +27,9 @@ public:
 	void Render(RenderingEngine* renderingEngine, const Camera& camera);
 
 	inline GameObject& GetRoot() { return m_root; }
+
+	inline double DisplayInputTime(double dividend) { return m_inputTimer.DisplayAndReset("Input Time: ", dividend); }
+	inline double DisplayUpdateTime(double dividend) { return m_inputTimer.DisplayAndReset("Update Time: ", dividend); }
 
 	inline void SetEngine(CoreEngine* engine) { m_root.SetEngine(engine); }
 

@@ -45,7 +45,7 @@ RenderingEngine::RenderingEngine(const Window& window) :
 	SetFloat("fxaaSpanMax", 16.0f);
 	SetFloat("fxaaReduceMin", 1.0f/128.0f);
 	SetFloat("fxaaReduceMul", 1.0f/4.0f);
-	SetTexture("displayTexture", Texture(m_window->GetWidth(), m_window->GetHeight(), 0, GL_TEXTURE_2D, GL_LINEAR, GL_RGBA, GL_RGBA, false, GL_COLOR_ATTACHMENT0));
+	SetTexture("displayTexture", Texture(m_window->GetWidth(), m_window->GetHeight(), 0, GL_TEXTURE_2D, GL_NEAREST, GL_RGBA, GL_RGBA, true, GL_COLOR_ATTACHMENT0));
 
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
@@ -145,7 +145,10 @@ void	RenderingEngine::Render(const GameObject& object, const Camera& mainCamera)
 	//FXAA
 	SetVector3f("inverseFilterTextureSize", Vector3f(1.0f / GetTexture("displayTexture").GetWidth(), 1.0f / GetTexture("displayTexture").GetHeight(), 0.0f));
 	m_renderProfileTimer.StopInvocation();
+
+	m_windowSyncProfileTimer.StartInvocation();
 	ApplyFilter(m_fxaaFilter, GetTexture("displayTexture"), 0);
+	m_windowSyncProfileTimer.StopInvocation();
 }
 
 void RenderingEngine::BlurShadowMap(int shadowMapIndex, float blurAmount)

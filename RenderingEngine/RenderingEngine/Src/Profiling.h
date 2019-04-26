@@ -17,6 +17,7 @@ public:
 	void	StartInvocation();
 	void	StopInvocation();
 
-	void	DisplayAndReset(const std::string& message);
+	double	GetTimeAndReset(double dividend = 0);
+	double	DisplayAndReset(const std::string& message, double dividend = 0, int displayedMessageLength = 40);
 
 };

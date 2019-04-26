@@ -73,26 +73,37 @@ void CoreEngine::Run()
 
 		if (framesCounter >= 1.0)
 		{
+			double totalTime = ((1000.0 * framesCounter) / (double)frames);
+			double totalRecordedTime = 0.0;
 			// printf("%i\n", frames);
-			m_renderingEngine->DisplayProfileInfo();
-			printf("Total Time: %f ms\n", 1000.0 / (double)frames);
+			totalRecordedTime += m_game->DisplayInputTime((double)frames);
+			totalRecordedTime += m_game->DisplayUpdateTime((double)frames);
+			totalRecordedTime += m_renderingEngine->DisplayRenderTime((double)frames);
+			totalRecordedTime += m_sleepTimer.DisplayAndReset("Sleep Timer: ", (double)frames);
+			totalRecordedTime += m_windowUpdateTimer.DisplayAndReset("Window Update Time: ", (double)frames);
+			totalRecordedTime += m_swapBufferTimer.DisplayAndReset("Buffer Swap Time: ", (double)frames);
+			totalRecordedTime += m_renderingEngine->DisplayWindowSyncTime((double)frames);
+			printf("Other Time:                             %f ms\n", totalTime - totalRecordedTime);
+			printf("Total Time:                             %f ms\n", totalTime);
 			frames = 0;
 			framesCounter = 0;
 		}
 
 		while (unprocessedTime > m_frameTime)
 		{
-			render = true;
+			m_windowUpdateTimer.StartInvocation();
+			m_window->Update();
 
 			if (m_window->IsCloseRequested())
 			{
 				Stop();
 			}
-
-			m_window->Update();
+			m_windowUpdateTimer.StopInvocation();
 
 			m_game->ProcessInput(m_window->GetInput(), (float)m_frameTime);
 			m_game->Update((float)m_frameTime);
+
+			render = true;
 
 			unprocessedTime -= m_frameTime;
 		}
@@ -100,12 +111,16 @@ void CoreEngine::Run()
 		if (render)
 		{
 			m_game->Render(m_renderingEngine, *m_mainCamera);
+			m_swapBufferTimer.StartInvocation();
 			m_window->SwapBuffers();
+			m_swapBufferTimer.StopInvocation();
 			frames++;
 		}
 		else
 		{
+			m_sleepTimer.StartInvocation();
 			Util::Sleep(1);
+			m_sleepTimer.StopInvocation();
 		}
 	}
 }

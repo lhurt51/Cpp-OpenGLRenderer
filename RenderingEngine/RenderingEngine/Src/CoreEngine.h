@@ -8,6 +8,10 @@ class Game;
 class CoreEngine
 {
 
+	ProfileTimer		m_sleepTimer;
+	ProfileTimer		m_windowUpdateTimer;
+	ProfileTimer		m_swapBufferTimer;
+
 	bool				m_isRunning;
 	int					m_width;
 	int					m_height;
