@@ -40,6 +40,7 @@ class RenderingEngine : public MappedValues
 	
 	Transform						m_altCameraTransform;
 	Camera							m_altCamera;
+	const Camera*					m_mainCamera;
 
 	const BaseLight*				m_activeLight;
 	std::vector<const BaseLight*>	m_lights;
@@ -52,9 +53,10 @@ public:
 	virtual ~RenderingEngine()
 	{}
 
-	void Render(const GameObject& object, const Camera& camera);
+	void Render(const GameObject& object);
 
 	inline void AddLight(const BaseLight& light) { m_lights.push_back(&light); }
+	inline void SetMainCamera(const Camera& camera) { m_mainCamera = &camera; }
 
 	inline const BaseLight& GetActiveLight() const { return *m_activeLight; }
 	inline unsigned int GetSamplerSlot(const std::string& samplerName) const { return m_samplerMap.find(samplerName)->second; }

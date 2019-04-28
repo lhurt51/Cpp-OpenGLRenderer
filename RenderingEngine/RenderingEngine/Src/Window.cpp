@@ -15,8 +15,8 @@ Window::Window(int width, int height, const std::string & title) : m_width(width
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
 	// MSAA 
-	//SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
-	//SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
+	// SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+	// SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
 
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
@@ -27,6 +27,7 @@ Window::Window(int width, int height, const std::string & title) : m_width(width
 
 	SDL_GL_SetSwapInterval(1);
 
+	// Access modern features of GLEW
 	glewExperimental = GL_TRUE;
 
 	GLenum res = glewInit();

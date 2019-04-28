@@ -6,27 +6,14 @@
 #include "Game.h"
 
 
-CoreEngine::CoreEngine(int width, int height, double frameRate, Game* game) :
+CoreEngine::CoreEngine(double frameRate, Window* window, RenderingEngine* renderingEngine, Game* game) :
 	m_isRunning(false),
-	m_width(width),
-	m_height(height),
 	m_frameTime(1.0/frameRate),
-	m_game(game),
-	m_renderingEngine(NULL)
+	m_window(window),
+	m_renderingEngine(renderingEngine),
+	m_game(game)
 {
 	m_game->SetEngine(this);
-}
-
-CoreEngine::~CoreEngine()
-{
-	if (m_window) delete m_window;
-	if (m_renderingEngine) delete m_renderingEngine;
-}
-
-void CoreEngine::CreateWindow(const std::string & title)
-{
-	m_window = new Window(m_width, m_height, title);
-	m_renderingEngine = new RenderingEngine(*m_window);
 }
 
 void CoreEngine::Start()
@@ -36,21 +23,6 @@ void CoreEngine::Start()
 		return;
 	}
 
-	Run();
-}
-
-void CoreEngine::Stop()
-{
-	if (!m_isRunning)
-	{
-		return;
-	}
-
-	m_isRunning = false;
-}
-
-void CoreEngine::Run()
-{
 	m_isRunning = true;
 
 	m_game->Init(*m_window);
@@ -110,7 +82,7 @@ void CoreEngine::Run()
 
 		if (render)
 		{
-			m_game->Render(m_renderingEngine, *m_mainCamera);
+			m_game->Render(m_renderingEngine);
 			m_swapBufferTimer.StartInvocation();
 			m_window->SwapBuffers();
 			m_swapBufferTimer.StopInvocation();
@@ -123,4 +95,9 @@ void CoreEngine::Run()
 			m_sleepTimer.StopInvocation();
 		}
 	}
+}
+
+void CoreEngine::Stop()
+{
+	m_isRunning = false;
 }

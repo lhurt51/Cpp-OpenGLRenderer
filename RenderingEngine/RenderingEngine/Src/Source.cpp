@@ -63,8 +63,9 @@ void TestGame::Init(const Window& window)
 int main(int argc, char* argv[])
 {
 	TestGame game;
-	CoreEngine engine(WIDTH, HEIGHT, 60, &game);
-	engine.CreateWindow("Ghost Engine");
+	Window window(WIDTH, HEIGHT, "Ghost Engine");
+	RenderingEngine renderer(window);
+	CoreEngine engine(60, &window, &renderer, &game);
 	engine.Start();
 	return 0;
 }

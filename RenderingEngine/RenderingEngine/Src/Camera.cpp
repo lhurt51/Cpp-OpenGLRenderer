@@ -14,7 +14,7 @@ Matrix4f Camera::GetViewProjection() const
 
 void CameraComponent::AddToEngine(CoreEngine* engine) const
 {
-	engine->SetCamera(m_camera);
+	engine->GetRenderingEngine()->SetMainCamera(m_camera);
 }
 
 void CameraComponent::SetParent(GameObject * parent)
