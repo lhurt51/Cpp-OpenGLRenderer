@@ -164,6 +164,18 @@
     <ClInclude Include="Src\Profiling.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Src\SIMD\simdaccel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\SIMD\simddefines.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\SIMD\simdemulator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\SIMD\x86simdaccel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Res\shaders\forward-ambient.vs" />
