@@ -52,6 +52,7 @@ class ShaderData : public ReferenceCounter
 {
 
 	static int							s_supportedGLSLLevel;
+	static std::string					s_glslVersion;
 	int									m_program;
 	std::vector<int>					m_shaders;
 	std::vector<std::string>			m_uniformNames;
@@ -60,7 +61,7 @@ class ShaderData : public ReferenceCounter
 
 public:
 
-	ShaderData(const std::string& fileName);
+	ShaderData(const std::string& fileName, bool useNewShaderSystem);
 	virtual ~ShaderData();
 
 	inline int GetProgram() const { return m_program; }
@@ -95,7 +96,7 @@ class Shader
 
 public:
 
-	Shader(const std::string& fileName);
+	Shader(const std::string& fileName = "basicShader", bool useNewShaderSystem = false);
 	Shader(const Shader& other);
 	virtual ~Shader();
 

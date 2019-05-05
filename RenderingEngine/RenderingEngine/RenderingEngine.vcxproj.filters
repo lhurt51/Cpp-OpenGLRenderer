@@ -188,5 +188,11 @@
     <None Include="Res\shaders\basicShader.vs" />
     <None Include="Res\shaders\filter-fxaa.fs" />
     <None Include="Res\shaders\filter-fxaa.vs" />
+    <None Include="Res\shaders\common.glh" />
+    <None Include="Res\shaders\filter-fxaa.glsl" />
+    <None Include="Res\shaders\filtergausBlur7x1.glsl" />
+    <None Include="Res\shaders\filter-null.glsl" />
+    <None Include="Res\shaders\forward-ambient.glsl" />
+    <None Include="Res\shaders\shadowMapGenerator.glsl" />
   </ItemGroup>
 </Project>
