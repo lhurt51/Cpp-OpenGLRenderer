@@ -21,11 +21,8 @@ static std::vector<UniformStruct> FindUniformStructs(const std::string& shaderTe
 static std::string FindUniformStructName(const std::string& structStartToOpeningBrace);
 static std::vector<TypedData> FindUniformStructComponents(const std::string& openingBraceToClosingBrace);
 static std::string LoadShader(const std::string& fileName);
-static void String_ReplaceKey(std::string* replaceIn, size_t replacementStart, const std::string& replacementValue, const std::string& endKey, int startLocation);
-static void String_FindAndReplace(std::string* replaceIn, const std::string& replacementKey, const std::string& replacementValue, const std::string& endKey = "", int startLocation = 0);
-static void String_ReplaceAll(std::string* replaceIn, const std::string& replacementKey, const std::string& replacementValue, const std::string& endKey = "", int startLocation = 0, bool insertCounter = false);
 
-ShaderData::ShaderData(const std::string & fileName, bool useNewShaderSystem)
+ShaderData::ShaderData(const std::string & fileName)
 {
 	m_program = glCreateProgram();
 
@@ -72,28 +69,17 @@ ShaderData::ShaderData(const std::string & fileName, bool useNewShaderSystem)
 		{
 			s_glslVersion = "110";
 		}
-	}
-
-	std::string vertexShaderText;
-	std::string fragmentShaderText;
-
-	if (!useNewShaderSystem)
-	{
-		vertexShaderText = LoadShader(fileName + ".vs");
-		fragmentShaderText = LoadShader(fileName + ".fs");
-
-		if (s_supportedGLSLLevel >= 320)
+		else
 		{
-			ConvertVertexShaderToGLSL150(&vertexShaderText);
-			ConvertFragmentShaderToGLSL150(&fragmentShaderText);
+			fprintf(stderr, "Error: OpenGL Version %d.%d does not support shaders.\n", majorVersion, minorVersion);
+			exit(1);
 		}
 	}
-	else
-	{
-		std::string shaderText = LoadShader(fileName + ".glsl");
-		vertexShaderText = "#version 150\n#define VS_BUILD\n#define GLSL_VERSION " + s_glslVersion + "\n" + shaderText;
-		fragmentShaderText = "#version 150\n#define FS_BUILD\n#define GLSL_VERSION " + s_glslVersion + "\n" + shaderText;
-	}
+
+	std::string shaderText = LoadShader(fileName + ".glsl");
+
+	std::string vertexShaderText = "#version " + s_glslVersion + "\n#define VS_BUILD\n#define GLSL_VERSION " + s_glslVersion + "\n" + shaderText;
+	std::string fragmentShaderText = "#version " + s_glslVersion + "\n#define FS_BUILD\n#define GLSL_VERSION " + s_glslVersion + "\n" + shaderText;
 
 	AddVertexShader(vertexShaderText);
 	AddFragmentShader(fragmentShaderText);
@@ -269,38 +255,7 @@ void ShaderData::CompileShader() const
 	CheckShaderError(m_program, GL_VALIDATE_STATUS, true, "Invalid shader program");
 }
 
-static void ReplaceShaderVersionWith(std::string* shaderText, const std::string& newVersion)
-{
-	static const std::string VERSION_KEY = "#version ";
-
-	size_t versionLocation = shaderText->find(VERSION_KEY);
-	size_t versionNumberStart = versionLocation + VERSION_KEY.length();
-	size_t versionNumberEnd = shaderText->find("\n", versionNumberStart) - versionNumberStart;
-	shaderText->replace(versionNumberStart, versionNumberEnd, newVersion);
-}
-
-void ShaderData::ConvertVertexShaderToGLSL150(std::string * shaderText)
-{
-	ReplaceShaderVersionWith(shaderText, "150");
-
-	String_ReplaceAll(shaderText, "varying", "out");
-	String_ReplaceAll(shaderText, "attribute", "in");
-}
-
-void ShaderData::ConvertFragmentShaderToGLSL150(std::string * shaderText)
-{
-	ReplaceShaderVersionWith(shaderText, "150");
-
-	String_ReplaceAll(shaderText, "varying", "in");
-	String_ReplaceAll(shaderText, "texture2D", "texture");
-	String_ReplaceAll(shaderText, "gl_FragColor", "OUT_Fragment_Color");
-
-	std::string newFragout = "out vec4 OUT_Fragment_Color;\n";
-	size_t start = shaderText->find("\n");
-	shaderText->replace(start + 1, 0, newFragout);
-}
-
-Shader::Shader(const std::string & fileName, bool useNewShaderSystem)
+Shader::Shader(const std::string & fileName)
 {
 	m_fileName = fileName;
 
@@ -312,7 +267,7 @@ Shader::Shader(const std::string & fileName, bool useNewShaderSystem)
 	}
 	else
 	{
-		m_shaderData = new ShaderData(fileName, useNewShaderSystem);
+		m_shaderData = new ShaderData(fileName);
 		s_resourceMap.insert(std::pair<std::string, ShaderData*>(fileName, m_shaderData));
 	}
 }
@@ -583,52 +538,4 @@ std::string LoadShader(const std::string & fileName)
 	}
 
 	return output;
-}
-
-void String_ReplaceKey(std::string * replaceIn, size_t replacementStart, const std::string & replacementValue, const std::string & endKey, int startLocation)
-{
-	size_t replacementEnd = replaceIn->find(endKey, startLocation) - replacementStart;
-
-	replaceIn->replace(replacementStart, replacementEnd, replacementValue);
-}
-
-void String_FindAndReplace(std::string * replaceIn, const std::string & replacementKey, const std::string & replacementValue, const std::string & endKey, int startLocation)
-{
-	size_t replacementStart = replaceIn->find(replacementKey, startLocation);
-
-	String_ReplaceKey(replaceIn, replaceIn->find(replacementKey, startLocation), replacementValue, endKey, replacementStart + replacementKey.length());
-}
-
-void String_ReplaceAll(std::string * replaceIn, const std::string & replacementKey, const std::string & replacementValue, const std::string & endKey, int startLocation, bool insertCounter)
-{
-	static std::string COUNTER_KEY = "%d";
-
-	int numReplaced = 0;
-	size_t replacementLocation = replaceIn->find(replacementKey, startLocation);
-
-	size_t counterLocation = 0;
-	std::string newReplacementStart = "";
-	std::string newReplacementEnd = "";
-
-	if (insertCounter)
-	{
-		counterLocation = replacementValue.find(COUNTER_KEY);
-		newReplacementStart = replacementValue.substr(0, counterLocation);
-		newReplacementEnd = replacementValue.substr(counterLocation + COUNTER_KEY.length());
-	}
-
-	while (replacementLocation != std::string::npos)
-	{
-		if (insertCounter)
-		{
-			std::stringstream newReplacement;
-			newReplacement << newReplacementStart << numReplaced << newReplacementEnd;
-			replaceIn->replace(replacementLocation, replacementKey.length(), newReplacement.str());
-		}
-		else
-			String_ReplaceKey(replaceIn, replacementLocation, replacementValue, endKey, replacementLocation + replacementKey.length());
-
-		replacementLocation = replaceIn->find(replacementKey, replacementLocation + replacementValue.length());
-		numReplaced++;
-	}
 }

@@ -183,36 +183,6 @@
     <ClInclude Include="Src\Utils\Util.h" />
     <ClInclude Include="Src\Window.h" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="Res\shaders\basicShader.fs" />
-    <None Include="Res\shaders\basicShader.vs" />
-    <None Include="Res\shaders\common.glh" />
-    <None Include="Res\shaders\filter-fxaa.fs" />
-    <None Include="Res\shaders\filter-fxaa.glsl" />
-    <None Include="Res\shaders\filter-fxaa.vs" />
-    <None Include="Res\shaders\filter-gausBlur7x1.fs" />
-    <None Include="Res\shaders\filter-gausBlur7x1.vs" />
-    <None Include="Res\shaders\filter-null.fs" />
-    <None Include="Res\shaders\filter-null.glsl" />
-    <None Include="Res\shaders\filter-null.vs" />
-    <None Include="Res\shaders\filtergausBlur7x1.glsl" />
-    <None Include="Res\shaders\forward-ambient.fs" />
-    <None Include="Res\shaders\forward-ambient.glsl" />
-    <None Include="Res\shaders\forward-ambient.vs" />
-    <None Include="Res\shaders\forward-directional.fs" />
-    <None Include="Res\shaders\forward-directional.vs" />
-    <None Include="Res\shaders\forward-point.fs" />
-    <None Include="Res\shaders\forward-point.vs" />
-    <None Include="Res\shaders\forward-spot.fs" />
-    <None Include="Res\shaders\forward-spot.vs" />
-    <None Include="Res\shaders\lighting.fsh" />
-    <None Include="Res\shaders\lighting.glh" />
-    <None Include="Res\shaders\lightingMain.fsh" />
-    <None Include="Res\shaders\sampling.glh" />
-    <None Include="Res\shaders\shadowMapGenerator.fs" />
-    <None Include="Res\shaders\shadowMapGenerator.glsl" />
-    <None Include="Res\shaders\shadowMapGenerator.vs" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
