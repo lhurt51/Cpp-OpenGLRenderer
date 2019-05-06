@@ -9,6 +9,8 @@
 #include <assimp\scene.h>
 #include <assimp\postprocess.h>
 
+#include "../Profiling.h"
+
 std::map<std::string, MeshData*> Mesh::s_resourceMap;
 
 bool IndexedModel::IsValid() const
@@ -191,13 +193,16 @@ MeshData::MeshData(const IndexedModel & model) : ReferenceCounter(), m_drawCount
 
 MeshData::~MeshData()
 {
+	glDeleteBuffers(NUM_BUFFERS, m_vertexArrayBuffers);
 	glDeleteVertexArrays(1, &m_vertexArrayObject);
 }
 
 void MeshData::Draw() const
 {
 	glBindVertexArray(m_vertexArrayObject);
+#if PROFILING_DISABLE_MESH_DRAWING == 0
 	glDrawElements(GL_TRIANGLES, m_drawCount, GL_UNSIGNED_INT, 0);
+#endif
 }
 
 Mesh::Mesh(const std::string & fileName) : m_fileName(fileName), m_meshData(0)

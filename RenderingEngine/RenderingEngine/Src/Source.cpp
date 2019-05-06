@@ -52,7 +52,7 @@ void TestGame::Init(const Window& window)
 			->AddChild((new GameObject())
 				->AddComponent(new CameraComponent(Matrix4f().InitPerspective(ToRadians(70.0f), window.GetAspect(), 0.1f, 1000.0f)))
 				->AddComponent(new FreeLook(window.GetCenter()))
-				->AddComponent(new FreeMove()))));
+				->AddComponent(new FreeMove(10.0f)))));
 	AddToScene((new GameObject(Vector3f(24.0f, -12.0f, 5.0f), Quaternion(Vector3f(0, 1, 0), ToRadians(30.0f))))
 		->AddComponent(new MeshRenderer(Mesh("cube.obj"), Material("bricks2"))));
 

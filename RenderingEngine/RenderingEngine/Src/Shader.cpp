@@ -11,6 +11,7 @@
 #include "Lighting\Lighting.h"
 #include "Utils\Util.h"
 #include "RenderingEngine.h"
+#include "Profiling.h"
 
 int ShaderData::s_supportedGLSLLevel = 0;
 std::map<std::string, ShaderData*> Shader::s_resourceMap;
@@ -24,6 +25,11 @@ static std::string LoadShader(const std::string& fileName);
 
 ShaderData::ShaderData(const std::string & fileName)
 {
+	std::string actualFileName = fileName;
+
+#if PROFILING_DISABLE_SHADING != 0
+	actualFileName = "nullShader";
+#endif
 	m_program = glCreateProgram();
 
 	if (m_program == 0)
@@ -76,7 +82,7 @@ ShaderData::ShaderData(const std::string & fileName)
 		}
 	}
 
-	std::string shaderText = LoadShader(fileName + ".glsl");
+	std::string shaderText = LoadShader(actualFileName + ".glsl");
 
 	std::string vertexShaderText = "#version " + s_glslVersion + "\n#define VS_BUILD\n#define GLSL_VERSION " + s_glslVersion + "\n" + shaderText;
 	std::string fragmentShaderText = "#version " + s_glslVersion + "\n#define FS_BUILD\n#define GLSL_VERSION " + s_glslVersion + "\n" + shaderText;
@@ -84,13 +90,12 @@ ShaderData::ShaderData(const std::string & fileName)
 	AddVertexShader(vertexShaderText);
 	AddFragmentShader(fragmentShaderText);
 
-	std::string attributeKeyword = s_supportedGLSLLevel < 320 ? "attribute" : "in";
+	std::string attributeKeyword = "attribute";
 	AddAllAttributes(vertexShaderText, attributeKeyword);
 
 	CompileShader();
 
-	AddShaderUniforms(vertexShaderText);
-	AddShaderUniforms(fragmentShaderText);
+	AddShaderUniforms(shaderText);
 }
 
 ShaderData::~ShaderData()
@@ -159,12 +164,12 @@ void ShaderData::AddAllAttributes(const std::string & vertexShaderText, const st
 	while (attributeLocation != std::string::npos)
 	{
 		bool isCommented = false;
-		size_t lastLineEnd = vertexShaderText.rfind(";", attributeLocation);
+		size_t lastLineEnd = vertexShaderText.rfind("\n", attributeLocation);
 
 		if (lastLineEnd != std::string::npos)
 		{
 			std::string potentialCommentSection = vertexShaderText.substr(lastLineEnd, attributeLocation - lastLineEnd);
-			isCommented = potentialCommentSection.find("//") != std::string::npos;
+			isCommented = potentialCommentSection.find("//") != std::string::npos || potentialCommentSection.find("#") != std::string::npos;
 		}
 
 		if (!isCommented)
@@ -194,7 +199,7 @@ void ShaderData::AddShaderUniforms(const std::string & shaderText)
 	while (uniformLocation != std::string::npos)
 	{
 		bool isCommented = false;
-		size_t lastLineEnd = shaderText.rfind(";", uniformLocation);
+		size_t lastLineEnd = shaderText.rfind("\n", uniformLocation);
 
 		if (lastLineEnd != std::string::npos)
 		{

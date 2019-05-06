@@ -45,6 +45,8 @@ RenderingEngine::RenderingEngine(const Window& window) :
 	SetFloat("fxaaSpanMax", 16.0f);
 	SetFloat("fxaaReduceMin", 1.0f/128.0f);
 	SetFloat("fxaaReduceMul", 1.0f/4.0f);
+	SetFloat("fxaaAspectDistortion", 150.0f);
+
 	SetTexture("displayTexture", Texture(m_window->GetWidth(), m_window->GetHeight(), 0, GL_TEXTURE_2D, GL_NEAREST, GL_RGBA, GL_RGBA, true, GL_COLOR_ATTACHMENT0));
 
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -53,7 +55,7 @@ RenderingEngine::RenderingEngine(const Window& window) :
 	glCullFace(GL_BACK);
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_DEPTH_CLAMP);
+	//glEnable(GL_DEPTH_CLAMP);
 	// MSAA
 	//glEnable(GL_MULTISAMPLE);
 
@@ -111,7 +113,9 @@ void	RenderingEngine::Render(const GameObject& object)
 			bool flipFaces = shadowInfo.GetFlipFaces();
 
 			if (flipFaces) glCullFace(GL_FRONT);
+			glEnable(GL_DEPTH_CLAMP);
 			object.RenderAll(m_shadowMapShader, *this, m_altCamera);
+			glDisable(GL_DEPTH_CLAMP);
 			if (flipFaces) glCullFace(GL_BACK);
 
 			float shadowSoftness = shadowInfo.GetShadowSoftness();
@@ -143,7 +147,10 @@ void	RenderingEngine::Render(const GameObject& object)
 	}
 
 	//FXAA
-	SetVector3f("inverseFilterTextureSize", Vector3f(1.0f / GetTexture("displayTexture").GetWidth(), 1.0f / GetTexture("displayTexture").GetHeight(), 0.0f));
+	// SetVector3f("inverseFilterTextureSize", Vector3f(1.0f / GetTexture("displayTexture").GetWidth(), 1.0f / GetTexture("displayTexture").GetHeight(), 0.0f));
+	float displayTextureAspect = (float)GetTexture("displayTexture").GetWidth() / (float)GetTexture("displayTexture").GetWidth();
+	float displayTextureHeightAdditive = displayTextureAspect * GetFloat("fxaaAspectDistortion");
+	SetVector3f("inverseFilterTextureSize", Vector3f(1.0f / (float)GetTexture("displayTexture").GetWidth(), 1.0f / ((float)GetTexture("displayTexture").GetHeight() + displayTextureHeightAdditive), 0.0f));
 	m_renderProfileTimer.StopInvocation();
 
 	m_windowSyncProfileTimer.StartInvocation();

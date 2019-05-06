@@ -4,6 +4,8 @@
 #include <cassert>
 #include <iostream>
 
+#include "Profiling.h"
+
 std::map<std::string, TextureData*> Texture::s_resourceMap;
 
 TextureData::TextureData(GLenum textureTarget, int width, int height, int numTextures, unsigned char** data, GLfloat* filters, GLenum* internalFormat, GLenum* format, bool clamp, GLenum* attachments)
@@ -11,8 +13,13 @@ TextureData::TextureData(GLenum textureTarget, int width, int height, int numTex
 	m_textureID = new GLuint[numTextures];
 	m_textureTarget = textureTarget;
 	m_numTextures = numTextures;
+#if PROFILING_SET_2x2_TEXTURE == 0
 	m_width = width;
 	m_height = height;
+#else
+	m_width = 0;
+	m_height = 0;
+#endif
 	m_frameBuffer = 0;
 	m_renderBuffer = 0;
 
@@ -37,7 +44,11 @@ void TextureData::BindAsRenderTarget() const
 {
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glBindFramebuffer(GL_FRAMEBUFFER, m_frameBuffer);
+#if PROFILING_SET_1x1_VIEWPORT == 0
 	glViewport(0, 0, m_width, m_height);
+#else
+	glViewport(0, 0, 1, 1);
+#endif
 }
 
 void TextureData::InitTextures(unsigned char** data, GLfloat* filters, GLenum* internalFormat, GLenum* format, bool clamp)

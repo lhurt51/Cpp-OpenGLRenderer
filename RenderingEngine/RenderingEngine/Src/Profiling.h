@@ -2,6 +2,11 @@
 
 #include <string>
 
+#define PROFILING_DISABLE_MESH_DRAWING 0
+#define PROFILING_DISABLE_SHADING 0
+#define PROFILING_SET_1x1_VIEWPORT 0
+#define PROFILING_SET_2x2_TEXTURE 0
+
 class ProfileTimer
 {
 

@@ -2,6 +2,8 @@
 #include <SDL.h>
 #include <GL/glew.h>
 
+#include "Profiling.h"
+
 Window::Window(int width, int height, const std::string & title) : m_width(width), m_height(height), m_title(title), m_input(this), m_isCloseRequested(false)
 {
 	SDL_Init(SDL_INIT_EVERYTHING);
@@ -116,7 +118,11 @@ void Window::BindAsRenderTarget() const
 {
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+#if PROFILING_SET_1x1_VIEWPORT == 0
 	glViewport(0, 0, GetWidth(), GetHeight());
+#else
+	glViewport(0, 0, 1, 1);
+#endif
 }
 
 void Window::SetFullScreen(bool value)
