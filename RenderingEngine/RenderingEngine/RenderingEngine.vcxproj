@@ -136,6 +136,7 @@
     <ClCompile Include="Src\Lighting\Lighting.cpp" />
     <ClCompile Include="Src\MappedValues.cpp" />
     <ClCompile Include="Src\Material.cpp" />
+    <ClCompile Include="Src\Physics\BoundingSphere.cpp" />
     <ClCompile Include="Src\Profiling.cpp" />
     <ClCompile Include="Src\RenderingEngine.cpp" />
     <ClCompile Include="Src\CoreEngine.cpp" />
@@ -162,6 +163,8 @@
     <ClInclude Include="Src\MappedValues.h" />
     <ClInclude Include="Src\Material.h" />
     <ClInclude Include="Src\Mesh\MeshRenderer.h" />
+    <ClInclude Include="Src\Physics\BoundingSphere.h" />
+    <ClInclude Include="Src\Physics\IntersectData.h" />
     <ClInclude Include="Src\Profiling.h" />
     <ClInclude Include="Src\SIMD\simdaccel.h" />
     <ClInclude Include="Src\SIMD\simddefines.h" />
