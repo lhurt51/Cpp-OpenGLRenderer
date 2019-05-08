@@ -1,7 +1,8 @@
 #include <iostream>
+
 #include "3DEngine.h"
-#include "FreeLook.h"
-#include "FreeMove.h"
+#include "Components\FreeLook.h"
+#include "Components\FreeMove.h"
 
 #define WIDTH 1920
 #define HEIGHT 1080
@@ -65,6 +66,7 @@ void TestGame::Init(const Window& window)
 
 int main(int argc, char* argv[])
 {
+	/*
 	BoundingSphere sphere1(Vector3f(0.0f, 0.0f, 0.0f), 1.0f);
 	BoundingSphere sphere2(Vector3f(0.0f, 3.0f, 0.0f), 1.0f);
 	BoundingSphere sphere3(Vector3f(0.0f, 0.0f, 2.0f), 1.0f);
@@ -77,13 +79,11 @@ int main(int argc, char* argv[])
 	std::cout << "Sphere1 intersect Sphere2: " << sphere1IntersectSphere2.GetDoesIntersect() << ", Distance: " << sphere1IntersectSphere2.GetDistance() << std::endl;
 	std::cout << "Sphere1 intersect Sphere3: " << sphere1IntersectSphere3.GetDoesIntersect() << ", Distance: " << sphere1IntersectSphere3.GetDistance() << std::endl;
 	std::cout << "Sphere1 intersect Sphere4: " << sphere1IntersectSphere4.GetDoesIntersect() << ", Distance: " << sphere1IntersectSphere4.GetDistance() << std::endl;
-
-	/*
+	*/
 	TestGame game;
 	Window window(WIDTH, HEIGHT, "Ghost Engine");
 	RenderingEngine renderer(window);
 	CoreEngine engine(60, &window, &renderer, &game);
 	engine.Start();
-	*/
 	return 0;
 }

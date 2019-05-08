@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Utils/Math/MathUtils.h"
+#include "../Core/Utils/Math/MathUtils.h"
 #include "IntersectData.h"
 
 class BoundingSphere

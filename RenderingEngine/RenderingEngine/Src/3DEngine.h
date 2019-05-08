@@ -1,13 +1,14 @@
 #pragma once
 
-#include "Mesh\Mesh.h"
-#include "Shader.h"
-#include "Transform.h"
-#include "Camera.h"
-#include "Lighting\Lighting.h"
-#include "GameObject.h"
-#include "Mesh\MeshRenderer.h"
-#include "Window.h"
-#include "CoreEngine.h"
-#include "Game.h"
+#include "Rendering/Mesh/Mesh.h"
+#include "Rendering/Shader/Shader.h"
+#include "Core/ECS/Transform.h"
+#include "Rendering/Camera/Camera.h"
+#include "Rendering/Lighting/Lighting.h"
+#include "Core/ECS/GameObject.h"
+#include "Components/MeshRenderer.h"
+#include "Rendering/Window/Window.h"
+#include "Core/CoreEngine.h"
+#include "Core/Game/Game.h"
+
 #undef main
