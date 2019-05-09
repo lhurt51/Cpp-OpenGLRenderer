@@ -62,11 +62,12 @@ void TestGame::Init(const Window& window)
 }
 
 #include "Physics\BoundingSphere.h"
+#include "Physics\AABB.h"
+
 #include <iostream>
 
 int main(int argc, char* argv[])
 {
-	/*
 	BoundingSphere sphere1(Vector3f(0.0f, 0.0f, 0.0f), 1.0f);
 	BoundingSphere sphere2(Vector3f(0.0f, 3.0f, 0.0f), 1.0f);
 	BoundingSphere sphere3(Vector3f(0.0f, 0.0f, 2.0f), 1.0f);
@@ -79,11 +80,31 @@ int main(int argc, char* argv[])
 	std::cout << "Sphere1 intersect Sphere2: " << sphere1IntersectSphere2.GetDoesIntersect() << ", Distance: " << sphere1IntersectSphere2.GetDistance() << std::endl;
 	std::cout << "Sphere1 intersect Sphere3: " << sphere1IntersectSphere3.GetDoesIntersect() << ", Distance: " << sphere1IntersectSphere3.GetDistance() << std::endl;
 	std::cout << "Sphere1 intersect Sphere4: " << sphere1IntersectSphere4.GetDoesIntersect() << ", Distance: " << sphere1IntersectSphere4.GetDistance() << std::endl;
-	*/
+
+	std::cout << std::endl;
+
+	AABB aabb1(Vector3f(0.0f, 0.0f, 0.0f), Vector3f(1.0f, 1.0f, 1.0f));
+	AABB aabb2(Vector3f(1.0f, 1.0f, 1.0f), Vector3f(2.0f, 2.0f, 2.0f));
+	AABB aabb3(Vector3f(1.0f, 0.0f, 0.0f), Vector3f(2.0f, 1.0f, 1.0f));
+	AABB aabb4(Vector3f(0.0f, 0.0f, -2.0f), Vector3f(1.0f, 1.0f, -1.0f));
+	AABB aabb5(Vector3f(0.0f, 0.5f, 0.0f), Vector3f(1.0f, 1.5f, 1.0f));
+
+	IntersectData aabb1Intersectaabb2 = aabb1.IntersectAABB(aabb2);
+	IntersectData aabb1Intersectaabb3 = aabb1.IntersectAABB(aabb3);
+	IntersectData aabb1Intersectaabb4 = aabb1.IntersectAABB(aabb4);
+	IntersectData aabb1Intersectaabb5 = aabb1.IntersectAABB(aabb5);
+
+	std::cout << "AABB1 intersect AABB2: " << aabb1Intersectaabb2.GetDoesIntersect() << ", Distance: " << aabb1Intersectaabb2.GetDistance() << std::endl;
+	std::cout << "AABB1 intersect AABB3: " << aabb1Intersectaabb3.GetDoesIntersect() << ", Distance: " << aabb1Intersectaabb3.GetDistance() << std::endl;
+	std::cout << "AABB1 intersect AABB4: " << aabb1Intersectaabb4.GetDoesIntersect() << ", Distance: " << aabb1Intersectaabb4.GetDistance() << std::endl;
+	std::cout << "AABB1 intersect AABB5: " << aabb1Intersectaabb5.GetDoesIntersect() << ", Distance: " << aabb1Intersectaabb5.GetDistance() << std::endl;
+
+	/*
 	TestGame game;
 	Window window(WIDTH, HEIGHT, "Ghost Engine");
 	RenderingEngine renderer(window);
 	CoreEngine engine(60, &window, &renderer, &game);
 	engine.Start();
-	return 0;
+	return 0
+	*/
 }

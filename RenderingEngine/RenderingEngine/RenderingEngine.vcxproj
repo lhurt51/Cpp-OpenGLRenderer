@@ -127,6 +127,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Src\Physics\AABB.cpp" />
     <ClCompile Include="Src\Rendering\Camera\Camera.cpp" />
     <ClCompile Include="Src\Components\FreeLook.cpp" />
     <ClCompile Include="Src\Components\FreeMove.cpp" />
@@ -158,6 +159,7 @@
     <ClInclude Include="Src\Core\ECS\GameObject.h" />
     <ClInclude Include="Src\Core\ECS\GameComponent.h" />
     <ClInclude Include="Src\Core\Input\Input.h" />
+    <ClInclude Include="Src\Physics\AABB.h" />
     <ClInclude Include="Src\Rendering\Lighting\Lighting.h" />
     <ClInclude Include="Src\Core\Utils\AssetManager\MappedValues.h" />
     <ClInclude Include="Src\Rendering\Material\Material.h" />
