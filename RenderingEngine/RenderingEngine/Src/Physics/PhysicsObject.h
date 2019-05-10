@@ -18,5 +18,7 @@ public:
 
 	void Integrate(float delta);
 
+	static void Test();
+
 };
 

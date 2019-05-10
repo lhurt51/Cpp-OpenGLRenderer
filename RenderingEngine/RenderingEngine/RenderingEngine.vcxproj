@@ -127,7 +127,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Src\Components\PhysicsEngineComponent.cpp" />
+    <ClCompile Include="Src\Components\PhysicsObjectComponent.cpp" />
     <ClCompile Include="Src\Physics\AABB.cpp" />
+    <ClCompile Include="Src\Physics\PhysicsEngine.cpp" />
     <ClCompile Include="Src\Physics\PhysicsObject.cpp" />
     <ClCompile Include="Src\Physics\Plane.cpp" />
     <ClCompile Include="Src\Rendering\Camera\Camera.cpp" />
@@ -158,11 +161,14 @@
   <ItemGroup>
     <ClInclude Include="Src\Components\FreeLook.h" />
     <ClInclude Include="Src\Components\FreeMove.h" />
+    <ClInclude Include="Src\Components\PhysicsEngineComponent.h" />
+    <ClInclude Include="Src\Components\PhysicsObjectComponent.h" />
     <ClInclude Include="Src\Core\Game\Game.h" />
     <ClInclude Include="Src\Core\ECS\GameObject.h" />
     <ClInclude Include="Src\Core\ECS\GameComponent.h" />
     <ClInclude Include="Src\Core\Input\Input.h" />
     <ClInclude Include="Src\Physics\AABB.h" />
+    <ClInclude Include="Src\Physics\PhysicsEngine.h" />
     <ClInclude Include="Src\Physics\PhysicsObject.h" />
     <ClInclude Include="Src\Physics\Plane.h" />
     <ClInclude Include="Src\Rendering\Lighting\Lighting.h" />

@@ -96,6 +96,15 @@
     <ClCompile Include="Src\Physics\PhysicsObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Src\Physics\PhysicsEngine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Components\PhysicsEngineComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Components\PhysicsObjectComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\3DEngine.h">
@@ -201,6 +210,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Src\Physics\PhysicsObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Physics\PhysicsEngine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Components\PhysicsEngineComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Components\PhysicsObjectComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
