@@ -19,4 +19,6 @@ public:
 	inline const Vector3f& GetMinExtents() const { return m_minExtents; }
 	inline const Vector3f& GetMaxExtents() const { return m_maxExtents; }
 
+	static void Test();
+
 };

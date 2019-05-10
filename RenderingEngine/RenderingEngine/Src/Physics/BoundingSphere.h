@@ -21,4 +21,6 @@ public:
 
 	IntersectData IntersectBoundingSphere(const BoundingSphere& other);
 
+	static void Test();
+
 };

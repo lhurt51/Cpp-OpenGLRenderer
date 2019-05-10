@@ -20,4 +20,6 @@ public:
 	Plane Normalized() const;
 	IntersectData IntersectSphere(const BoundingSphere& other) const;
 
+	static void Test();
+
 };

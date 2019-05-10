@@ -152,6 +152,7 @@
     <ClCompile Include="Src\Core\Utils\Time\Time.cpp" />
     <ClCompile Include="Src\Core\Utils\Util.cpp" />
     <ClCompile Include="Src\Rendering\Window\Window.cpp" />
+    <ClCompile Include="Src\Testing.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\Components\FreeLook.h" />
@@ -187,6 +188,7 @@
     <ClInclude Include="Src\Core\Utils\Time\Time.h" />
     <ClInclude Include="Src\Core\Utils\Util.h" />
     <ClInclude Include="Src\Rendering\Window\Window.h" />
+    <ClInclude Include="Src\Testing.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Res\shaders\nullShader.glsl" />
