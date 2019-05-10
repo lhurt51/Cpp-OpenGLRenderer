@@ -63,6 +63,7 @@ void TestGame::Init(const Window& window)
 
 #include "Physics\BoundingSphere.h"
 #include "Physics\AABB.h"
+#include "Physics\Plane.h"
 
 #include <iostream>
 
@@ -98,6 +99,20 @@ int main(int argc, char* argv[])
 	std::cout << "AABB1 intersect AABB3: " << aabb1Intersectaabb3.GetDoesIntersect() << ", Distance: " << aabb1Intersectaabb3.GetDistance() << std::endl;
 	std::cout << "AABB1 intersect AABB4: " << aabb1Intersectaabb4.GetDoesIntersect() << ", Distance: " << aabb1Intersectaabb4.GetDistance() << std::endl;
 	std::cout << "AABB1 intersect AABB5: " << aabb1Intersectaabb5.GetDoesIntersect() << ", Distance: " << aabb1Intersectaabb5.GetDistance() << std::endl;
+
+	std::cout << std::endl;
+
+	Plane plane1(Vector3f(0.0f, 1.0f, 0.0f), 0.0f);
+
+	IntersectData plane1IntersectSphere1 = plane1.IntersectSphere(sphere1);
+	IntersectData plane1IntersectSphere2 = plane1.IntersectSphere(sphere2);
+	IntersectData plane1IntersectSphere3 = plane1.IntersectSphere(sphere3);
+	IntersectData plane1IntersectSphere4 = plane1.IntersectSphere(sphere4);
+
+	std::cout << "Plane1 intersect Sphere1: " << plane1IntersectSphere1.GetDoesIntersect() << ", Distance: " << plane1IntersectSphere1.GetDistance() << std::endl;
+	std::cout << "Plane1 intersect Sphere2: " << plane1IntersectSphere2.GetDoesIntersect() << ", Distance: " << plane1IntersectSphere2.GetDistance() << std::endl;
+	std::cout << "Plane1 intersect Sphere3: " << plane1IntersectSphere3.GetDoesIntersect() << ", Distance: " << plane1IntersectSphere3.GetDistance() << std::endl;
+	std::cout << "Plane1 intersect Sphere4: " << plane1IntersectSphere4.GetDoesIntersect() << ", Distance: " << plane1IntersectSphere4.GetDistance() << std::endl;
 
 	/*
 	TestGame game;
