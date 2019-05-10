@@ -18,6 +18,8 @@ public:
 
 	void Simulate(float delta);
 
+	void HandleCollisions();
+
 	// Temporary code
 	inline const PhysicsObject& GetObject(unsigned int index) const
 	{

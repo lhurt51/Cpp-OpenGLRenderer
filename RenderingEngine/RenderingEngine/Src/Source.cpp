@@ -71,15 +71,15 @@ void TestGame::Init(const Window& window)
 	// Temporary Code
 	PhysicsEngine physicsEngine;
 
-	physicsEngine.AddObject(PhysicsObject(Vector3f(0.0f, 0.0f, 0.0f), Vector3f(1.0f, 1.0f, 0.0f)));
+	physicsEngine.AddObject(PhysicsObject(Vector3f(0.0f, 0.0f, 0.0f), Vector3f(0.0f, 0.0f, 1.0f), 1.0f));
 
-	physicsEngine.AddObject(PhysicsObject(Vector3f(20.0f, 30.0f, -9.0f), Vector3f(-0.8f, -0.9f, 0.7f)));
+	physicsEngine.AddObject(PhysicsObject(Vector3f(0.0f, 0.0f, 10.0f), Vector3f(0.0f, 0.0f, -1.0f), 2.0f));
 
 	PhysicsEngineComponent* physicsEngineComponent = new PhysicsEngineComponent(physicsEngine);
 
 	for (unsigned int i = 0; i < physicsEngineComponent->GetPhysicsEngine().GetNumObjects(); i++)
 	{
-		AddToScene((new GameObject())
+		AddToScene((new GameObject(Vector3f(0.0f, 0.0f, 0.0f), Quaternion(), physicsEngineComponent->GetPhysicsEngine().GetObject(i).GetRadius()))
 			->AddComponent(new PhysicsObjectComponent(&physicsEngineComponent->GetPhysicsEngine().GetObject(i)))
 			->AddComponent(new MeshRenderer(Mesh("sphere.obj"), Material("bricks"))));
 	}

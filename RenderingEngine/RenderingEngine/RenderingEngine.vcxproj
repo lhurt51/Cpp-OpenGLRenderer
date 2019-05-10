@@ -130,6 +130,7 @@
     <ClCompile Include="Src\Components\PhysicsEngineComponent.cpp" />
     <ClCompile Include="Src\Components\PhysicsObjectComponent.cpp" />
     <ClCompile Include="Src\Physics\AABB.cpp" />
+    <ClCompile Include="Src\Physics\Collider.cpp" />
     <ClCompile Include="Src\Physics\PhysicsEngine.cpp" />
     <ClCompile Include="Src\Physics\PhysicsObject.cpp" />
     <ClCompile Include="Src\Physics\Plane.cpp" />
@@ -168,6 +169,7 @@
     <ClInclude Include="Src\Core\ECS\GameComponent.h" />
     <ClInclude Include="Src\Core\Input\Input.h" />
     <ClInclude Include="Src\Physics\AABB.h" />
+    <ClInclude Include="Src\Physics\Collider.h" />
     <ClInclude Include="Src\Physics\PhysicsEngine.h" />
     <ClInclude Include="Src\Physics\PhysicsObject.h" />
     <ClInclude Include="Src\Physics\Plane.h" />
