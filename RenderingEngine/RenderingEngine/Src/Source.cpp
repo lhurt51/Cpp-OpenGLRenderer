@@ -62,14 +62,29 @@ void TestGame::Init(const Window& window)
 		->AddComponent(new MeshRenderer(Mesh("square"), Material("bricks2"))));
 }
 
+#include <iostream>
+#include "Physics\PhysicsObject.h"
+
 int main(int argc, char* argv[])
 {
 	Testing::RunAllTests();
 
+	PhysicsObject test(Vector3f(0.0f, 1.0f, 0.0f), Vector3f(1.0f, 2.0f, 3.0f));
+
+	test.Integrate(20.0f);
+
+	Vector3f testPos = test.GetPosition();
+	Vector3f testVel = test.GetVelocity();
+
+	std::cout << "(" << testPos.GetX() << ", " << testPos.GetY() << ", " << testPos.GetZ() << ")" << std::endl;
+	std::cout << "(" << testVel.GetX() << ", " << testVel.GetY() << ", " << testVel.GetZ() << ")" << std::endl;
+
+	/*
 	TestGame game;
 	Window window(WIDTH, HEIGHT, "Ghost Engine");
 	RenderingEngine renderer(window);
 	CoreEngine engine(60, &window, &renderer, &game);
 	engine.Start();
+	*/
 	return 0;
 }
