@@ -1,17 +1,17 @@
 #pragma once
 
 #include "../Core/Utils/Math/MathUtils.h"
-#include "IntersectData.h"
+#include "Collider.h"
 
-class BoundingSphere
+class BoundingSphere : public Collider
 {
 
-	const Vector3f	m_center;
-	const float		m_radius;
+	Vector3f	m_center;
+	float		m_radius;
 
 public:
 
-	BoundingSphere(const Vector3f& center, float radius) :
+	BoundingSphere(const Vector3f& center, float radius) : Collider(Collider::TYPE_SPHERE),
 		m_center(center),
 		m_radius(radius)
 	{}
