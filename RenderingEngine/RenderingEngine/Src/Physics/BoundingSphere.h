@@ -16,10 +16,12 @@ public:
 		m_radius(radius)
 	{}
 
-	inline const Vector3f& GetCenter()	const { return m_center; }
 	inline float GetRadius()			const { return m_radius; }
 
 	IntersectData IntersectBoundingSphere(const BoundingSphere& other);
+
+	virtual void Transform(const Vector3f& translation);
+	virtual Vector3f GetCenter()		const { return m_center; }
 
 	static void Test();
 

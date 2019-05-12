@@ -1,8 +1,10 @@
 #pragma once
 
 #include "IntersectData.h"
+#include "../Core/Utils/Math/MathUtils.h"
+#include "../Core/Utils/AssetManager/ReferenceCounter.h"
 
-class Collider
+class Collider : public ReferenceCounter
 {
 public:
 
@@ -19,11 +21,14 @@ private:
 
 public:
 
-	Collider(int type) : m_type(type)
+	Collider(int type) : ReferenceCounter(), m_type(type)
 	{}
 
 	inline int GetType() const { return m_type; }
 
 	IntersectData Intersect(const Collider& other);
+
+	virtual void Transform(const Vector3f& translation) = 0;
+	virtual Vector3f GetCenter() const { return Vector3f(0.0f, 0.0f, 0.0f); }
 
 };

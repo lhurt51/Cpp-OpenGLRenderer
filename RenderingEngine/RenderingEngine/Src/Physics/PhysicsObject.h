@@ -1,31 +1,34 @@
 #pragma once
 
 #include "../Core/Utils/Math/MathUtils.h"
-#include "BoundingSphere.h"
+#include "Collider.h"
 
 class PhysicsObject
 {
 
 	Vector3f	m_position;
+	Vector3f	m_oldPosition;
 	Vector3f	m_velocity;
-	float		m_radius;
-
-	// Temp
-	mutable BoundingSphere m_boundingSphere;
+	Collider*	m_collider;
 
 public:
 
-	PhysicsObject(const Vector3f& position, const Vector3f velocity, float radius) : m_position(position), m_velocity(velocity), m_radius(radius), m_boundingSphere(position, radius)
+	PhysicsObject(Collider* collider, const Vector3f& velocity) : m_position(collider->GetCenter()), m_oldPosition(collider->GetCenter()), m_velocity(velocity), m_collider(collider)
 	{}
+	PhysicsObject(const PhysicsObject& other);
+	virtual ~PhysicsObject();
+
+	PhysicsObject operator=(PhysicsObject other);
 
 	inline const Vector3f& GetPosition() const { return m_position; }
 	inline const Vector3f& GetVelocity() const { return m_velocity; }
-	inline float GetRadius() const { return m_radius; }
 
-	inline Collider& GetBoundingSphere() const
+	inline Collider& GetCollider()
 	{
-		m_boundingSphere = BoundingSphere(m_position, m_radius);
-		return m_boundingSphere;
+		Vector3f translation = m_position - m_oldPosition;
+		m_oldPosition = m_position;
+		m_collider->Transform(translation);
+		return *m_collider;
 	}
 
 	inline void SetVelocity(const Vector3f& velocity) { m_velocity = velocity; }

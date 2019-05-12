@@ -10,6 +10,11 @@ IntersectData BoundingSphere::IntersectBoundingSphere(const BoundingSphere & oth
 	return IntersectData(distance < 0, distance);
 }
 
+void BoundingSphere::Transform(const Vector3f & translation)
+{
+	m_center += translation;
+}
+
 void BoundingSphere::Test()
 {
 	BoundingSphere sphere1(Vector3f(0.0f, 0.0f, 0.0f), 1.0f);
