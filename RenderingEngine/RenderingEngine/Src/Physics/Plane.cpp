@@ -13,7 +13,7 @@ IntersectData Plane::IntersectSphere(const BoundingSphere & other) const
 	float distanceFromSphereCenter = fabs(m_normal.Dot(other.GetCenter()) + m_distance);
 	float distanceFromSphere = distanceFromSphereCenter - other.GetRadius();
 	
-	return IntersectData(distanceFromSphere < 0.0f, distanceFromSphere);
+	return IntersectData(distanceFromSphere < 0.0f, m_normal * distanceFromSphere);
 }
 
 void Plane::Test()
@@ -31,16 +31,16 @@ void Plane::Test()
 	IntersectData plane1IntersectSphere4 = plane1.IntersectSphere(sphere4);
 
 	assert(plane1IntersectSphere1.GetDoesIntersect() == true);
-	assert(plane1IntersectSphere1.GetDistance() == -1.0f);
+	assert(plane1IntersectSphere1.GetDistance() == 1.0f);
 
 	assert(plane1IntersectSphere2.GetDoesIntersect() == false);
 	assert(plane1IntersectSphere2.GetDistance() == 2.0f);
 
 	assert(plane1IntersectSphere3.GetDoesIntersect() == true);
-	assert(plane1IntersectSphere3.GetDistance() == -1.0f);
+	assert(plane1IntersectSphere3.GetDistance() == 1.0f);
 
 	assert(plane1IntersectSphere4.GetDoesIntersect() == true);
-	assert(plane1IntersectSphere4.GetDistance() == -1.0f);
+	assert(plane1IntersectSphere4.GetDistance() == 1.0f);
 
 	/*
 	std::cout << "Plane1 intersect Sphere1: " << plane1IntersectSphere1.GetDoesIntersect() << ", Distance: " << plane1IntersectSphere1.GetDistance() << std::endl;
