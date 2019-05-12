@@ -72,9 +72,9 @@ void TestGame::Init(const Window& window)
 	// Temporary Code
 	PhysicsEngine physicsEngine;
 
-	physicsEngine.AddObject(PhysicsObject(new BoundingSphere(Vector3f(0.0f, 0.0f, 0.0f), 1.0f), Vector3f(0.0f, 0.0f, 1.0f)));
+	physicsEngine.AddObject(PhysicsObject(new BoundingSphere(Vector3f(0.0f, 0.0f, 0.0f), 1.0f), Vector3f(0.0f, 0.0f, 1.141f / 2.0f)));
 
-	physicsEngine.AddObject(PhysicsObject(new BoundingSphere(Vector3f(0.0f, 0.0f, 10.0f), 1.0f), Vector3f(0.0f, 0.0f, -1.0f)));
+	physicsEngine.AddObject(PhysicsObject(new BoundingSphere(Vector3f(1.414f / 2.0f * 7.0f, 0.0f, 1.414f / 2.0f * 7.0f), 1.0f), Vector3f(-1.414f / 2.0f, 0.0f, -1.414f / 2.0f)));
 
 	PhysicsEngineComponent* physicsEngineComponent = new PhysicsEngineComponent(physicsEngine);
 

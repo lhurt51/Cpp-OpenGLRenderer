@@ -18,7 +18,7 @@ public:
 	PhysicsObject(const PhysicsObject& other);
 	virtual ~PhysicsObject();
 
-	PhysicsObject operator=(PhysicsObject other);
+	void operator=(PhysicsObject other);
 
 	inline const Vector3f& GetPosition() const { return m_position; }
 	inline const Vector3f& GetVelocity() const { return m_velocity; }

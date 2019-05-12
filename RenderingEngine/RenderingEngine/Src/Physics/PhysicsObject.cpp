@@ -18,13 +18,12 @@ PhysicsObject::~PhysicsObject()
 	}
 }
 
-PhysicsObject PhysicsObject::operator=(PhysicsObject other)
+void PhysicsObject::operator=(PhysicsObject other)
 {
 	char* temp[sizeof(PhysicsObject) / sizeof(char)];
 	memcpy(temp, this, sizeof(PhysicsObject));
 	memcpy(this, &other, sizeof(PhysicsObject));
 	memcpy(&other, temp, sizeof(PhysicsObject));
-	return *this;
 }
 
 void PhysicsObject::Integrate(float delta)
