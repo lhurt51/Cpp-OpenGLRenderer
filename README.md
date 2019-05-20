@@ -40,5 +40,4 @@ Creating an OpenGl and C++ game rendered.
 
 ## Additional Credits ##
 - Etay Meiri, for http://ogldev.atspace.co.uk/ which inspired the base code for this repository.
-- [@mxaddict](https://github.com/mxaddict) for setting up the awesome CMake build system
 - Everyone who's created or contributed to issues and pull requests, which make the project better!
