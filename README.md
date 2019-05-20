@@ -6,7 +6,7 @@ Creating an OpenGl and c++ game rendered.
 ## Build instructions & concept provided by BennyQBD
 - [BennyQBDGithub](https://github.com/BennyQBD)
 
-##Build Dependencies##
+## Build Dependencies ##
 - [CMAKE](http://www.cmake.org/)
 - [GLEW](http://glew.sourceforge.net/)
 - [SDL2](http://www.libsdl.org/)
@@ -23,7 +23,7 @@ Creating an OpenGl and c++ game rendered.
 		- [Visual Studio](http://www.visualstudio.com/)
 		- [CodeBlocks](http://www.codeblocks.org/)
 
-###NOTES for Dependencies###
+### NOTES for Dependencies ###
 On Unix/Linux/Mac you can likely install CMAKE, GLEW, SDL2 and ASSIMP with your package manager
 ```shell
 # On ubuntu just run
@@ -33,8 +33,8 @@ sudo apt-get install cmake libglew-dev libsdl2-dev libassimp-dev
 brew install cmake glew sdl2 assimp
 ```
 
-##Simple Build Instructions##
-###Mac OSX/Linux/Unix###
+## Simple Build Instructions ##
+### Mac OSX/Linux/Unix ###
 - Open a Terminal and run:
 ```Shell
 # install dependencies
@@ -47,15 +47,15 @@ brew install cmake glew sdl2 assimp
 ```
 - If this fails for any reason, try using the Manual Build Instructions below.
 
-###Windows###
+### Windows ###
 - Make sure CMake is both installed and added to the system PATH.
 - Run "Windows-GenVisualStudioProject.bat" If this fails for any reason, try using the Manual Build Instructions below.
 - Go to the build folder, and open 3DEngineCpp.sln with Visual Studio 2012 or newer (For older versions of Visual Studio, use manual build instructions)
 - Right click on the 3DEngineCpp project, and select "Set as start up project"
 - Build and Run
 
-##Manual Build Instructions##
-###Linux/Unix###
+## Manual Build Instructions ##
+### Linux/Unix ###
 - Open a Terminal and run:
 ```Shell
 # install dependencies
@@ -64,7 +64,7 @@ cmake ../
 make
 ```
 
-###Mac OSX###
+### Mac OSX ###
 - Open a Terminal and run:
 ```Shell
 # install dependencies
@@ -73,7 +73,7 @@ cmake ../
 make
 ```
 
-###Windows/MinGW###
+### Windows/MinGW ###
 - Make sure CMake is both installed and added to the system PATH.
 - Open a Terminal and run:
 ```Shell
@@ -92,7 +92,7 @@ cmake -G "Visual Studio 12" ../
 - Move the res folder into the build folder
 - Run
 
-##Additional Credits##
+## Additional Credits ##
 - Etay Meiri, for http://ogldev.atspace.co.uk/ which inspired the base code for this repository.
 - [@mxaddict](https://github.com/mxaddict) for setting up the awesome CMake build system
 - Everyone who's created or contributed to issues and pull requests, which make the project better!
