@@ -3,8 +3,8 @@ Cpp-OpenGLRenderer
 
 Creating an OpenGl and c++ game rendered.
 
-## Build instructions & concept provided by 
-- [TheBennyBox](https://github.com/BennyQBD)
+## Build instructions & concept provided by BennyQBD
+- [BennyQBDGithub](https://github.com/BennyQBD)
 
 ##Build Dependencies##
 - [CMAKE](http://www.cmake.org/)
