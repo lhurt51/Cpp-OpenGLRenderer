@@ -1,5 +1,6 @@
-# Cpp-OpenGLRenderer
+Cpp-OpenGLRenderer
 ==
+
 Creating an OpenGl and c++ game rendered.
 
 ## Build instructions & concept provided by 
